@@ -1,0 +1,52 @@
+[project]
+name = "todo-api"
+version = "0.1.0"
+description = "Minimal FastAPI todo API scaffold"
+requires-python = ">=3.10"
+readme = "README.md"
+dependencies = [
+  "fastapi>=0.115,<1.0",
+  "uvicorn>=0.38,<1.0",
+  "httpx>=0.28,<0.29",
+  "pytest>=8.2,<10",
+  "pytest-asyncio>=0.23,<2.0",
+  "sqlmodel>=0.0.22,<0.1",
+]
+
+[dependency-groups]
+dev = [
+  "ruff>=0.6",
+  "black>=24.8",
+  "mypy>=1.11",
+  "pre-commit>=4.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.ruff.lint]
+select = ["E","F","I","UP","B","SIM","ASYNC"]
+ignore = []
+
+[tool.black]
+target-version = ["py313"]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.13"
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_optional = true
+pretty = true
