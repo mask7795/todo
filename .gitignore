@@ -15,3 +15,6 @@ coverage.xml
 
 # VS Code
 .vscode/
+
+# Local data (SQLite DB, etc.)
+.data/
