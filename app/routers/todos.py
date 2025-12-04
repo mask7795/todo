@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 
 from app.db import ensure_schema, get_session
+from app.deps import require_api_key
 from app.models.todo import Todo
 from app.routers.metrics import inc_db_error, record_db_timing
 from app.schemas.todo import Todo as TodoSchema
@@ -72,7 +73,11 @@ def list_todos(
 
 
 @router.post("/", response_model=TodoSchema, status_code=status.HTTP_201_CREATED)
-def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_session)]) -> Todo:
+def create_todo(
+    todo: TodoCreate,
+    session: Annotated[Session, Depends(get_session)],
+    _: None = Depends(require_api_key),
+) -> Todo:
     ensure_schema()
     obj = Todo(
         title=todo.title,
@@ -114,6 +119,7 @@ def update_todo(
     todo_id: int,
     updated: TodoUpdate,
     session: Annotated[Session, Depends(get_session)],
+    _: None = Depends(require_api_key),
 ) -> Todo:
     ensure_schema()
     todo = session.get(Todo, todo_id)
@@ -141,7 +147,11 @@ def update_todo(
 
 
 @router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> None:
+def delete_todo(
+    todo_id: int,
+    session: Annotated[Session, Depends(get_session)],
+    _: None = Depends(require_api_key),
+) -> None:
     ensure_schema()
     t0 = time.perf_counter()
     try:
@@ -169,7 +179,11 @@ def delete_todo(todo_id: int, session: Annotated[Session, Depends(get_session)])
 
 
 @router.post("/{todo_id}/restore", response_model=TodoSchema, status_code=status.HTTP_200_OK)
-def restore_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> Todo:
+def restore_todo(
+    todo_id: int,
+    session: Annotated[Session, Depends(get_session)],
+    _: None = Depends(require_api_key),
+) -> Todo:
     ensure_schema()
     todo = session.get(Todo, todo_id)
     if not todo:

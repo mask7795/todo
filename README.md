@@ -105,6 +105,9 @@ uv run pytest -q --cov=app --cov-report=term
 ## Notes
 - The app uses SQLModel + SQLite for persistence (`./todo.db`).
 - Tests reset the DB automatically via `reset_db()`.
+ - API key (optional): set `TODO_API_KEY` env var to require `X-API-Key` on write routes
+	 - Protected routes: `POST /todos/`, `PUT /todos/{id}`, `DELETE /todos/{id}`, `POST /todos/{id}/restore`
+	 - Example: `TODO_API_KEY=secret uv run uvicorn app.main:app --reload ...` and send header `X-API-Key: secret`
 
 ## Lint, Format, Type-check
 
