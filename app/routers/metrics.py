@@ -33,6 +33,14 @@ def get_registry() -> CollectorRegistry:
     return _registry
 
 
+def record_request(method: str, path: str, status: int, duration_seconds: float) -> None:
+    # Ensure metrics are initialized
+    get_registry()
+    assert _requests_total is not None and _request_duration is not None
+    _requests_total.labels(method=method, path=path, status=str(status)).inc()
+    _request_duration.labels(method=method, path=path, status=str(status)).observe(duration_seconds)
+
+
 @router.get("/metrics")
 def metrics() -> Response:
     registry = get_registry()

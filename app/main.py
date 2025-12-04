@@ -1,9 +1,11 @@
-from contextlib import asynccontextmanager
+import time
+from contextlib import asynccontextmanager, suppress
 
-from fastapi import FastAPI, status
+from fastapi import FastAPI, Request, status
 
 from app.db import init_db
 from app.routers.health import router as health_router
+from app.routers.metrics import record_request
 from app.routers.metrics import router as metrics_router
 from app.routers.todos import router as todos_router
 
@@ -38,3 +40,17 @@ async def read_root() -> dict:
 
 
 # Using lifespan above instead of deprecated on_event startup
+
+
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    duration = time.perf_counter() - start
+    # Use route path if available to avoid query strings
+    path = request.url.path
+    method = request.method
+    status_code = response.status_code
+    with suppress(Exception):
+        record_request(method, path, status_code, duration)
+    return response
