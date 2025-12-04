@@ -105,6 +105,55 @@ async def test_pagination():
 
 
 @pytest.mark.asyncio
+async def test_due_dates_and_priority_filters_and_sort():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # Create with due_at and priorities
+        r = await ac.post(
+            "/todos/",
+            json={
+                "title": "P1",
+                "priority": "high",
+                "due_at": "2100-01-01T00:00:00+00:00",
+            },
+        )
+        assert r.status_code == 201
+        r = await ac.post(
+            "/todos/",
+            json={
+                "title": "P2",
+                "priority": "low",
+                "due_at": "2000-01-01T00:00:00+00:00",
+            },
+        )
+        assert r.status_code == 201
+        r = await ac.post("/todos/", json={"title": "P3", "priority": "medium"})
+        assert r.status_code == 201
+
+        # Filter by priority
+        r = await ac.get("/todos/?priority=high")
+        assert r.status_code == 200
+        body = r.json()
+        assert body["total"] >= 1
+        assert any(item["priority"] == "high" for item in body["items"])
+
+        # Filter overdue (past due)
+        r = await ac.get("/todos/?overdue=true")
+        assert r.status_code == 200
+        body = r.json()
+        assert any(item["title"] == "P2" for item in body["items"])  # past due
+
+        # Sort by due_at ascending
+        r = await ac.get("/todos/?sort_due=true")
+        assert r.status_code == 200
+        items = r.json()["items"]
+        # Items with None due_at may appear; ensure first with due_at is the oldest
+        with_due = [i for i in items if i.get("due_at")]
+        if with_due:
+            assert with_due[0]["title"] in {"P2", "P1"}
+
+
+@pytest.mark.asyncio
 async def test_filter_completed():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

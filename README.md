@@ -28,6 +28,7 @@ Quick checks:
 - Get: `GET /todos/{id}`
 - Update: `PATCH /todos/{id} {"completed": true}`
 - List: `GET /todos/?limit=10&offset=0&completed=true|false`
+ - List: `GET /todos/?limit=10&offset=0&completed=true|false&priority=low|medium|high&overdue=true|false&sort_due=true|false`
 - Delete: `DELETE /todos/{id}`
 
 ## Health & Metrics

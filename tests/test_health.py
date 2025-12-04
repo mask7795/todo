@@ -39,14 +39,19 @@ async def test_readiness():
 async def test_metrics_endpoint():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        # Hit root and todos to generate some metrics
+        # Hit endpoints to generate metrics, including 404 to exercise error counter
         await ac.get("/")
         await ac.get("/todos/")
+        await ac.get("/not-found")
         r = await ac.get("/metrics")
         assert r.status_code == 200
         body = r.text
         assert "http_requests_total" in body
         assert "http_request_duration_seconds" in body
+        assert "http_requests_class_total" in body
+        assert "http_errors_total" in body
+        assert "http_request_size_bytes" in body
+        assert "http_response_size_bytes" in body
     assert r.status_code == 200
     assert r.headers.get("content-type", "").startswith("text/plain")
     assert r.text.startswith("# HELP")

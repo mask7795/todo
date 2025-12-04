@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from pathlib import Path
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session, SQLModel
 
@@ -15,6 +15,25 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_db() -> None:
     SQLModel.metadata.create_all(bind=engine)
+    ensure_schema()
+
+
+def ensure_schema() -> None:
+    """Ensure SQLite schema has latest optional columns.
+
+    Adds new nullable columns via ALTER TABLE if they are missing.
+    Safe to run multiple times.
+    """
+    with engine.connect() as conn:
+        # Inspect existing columns
+        cols = conn.execute(text("PRAGMA table_info('todo')")).fetchall()
+        existing = {row[1] for row in cols}  # row[1] = name
+
+        if "due_at" not in existing:
+            conn.execute(text("ALTER TABLE todo ADD COLUMN due_at DATETIME NULL"))
+        if "priority" not in existing:
+            conn.execute(text("ALTER TABLE todo ADD COLUMN priority VARCHAR NULL"))
+        conn.commit()
 
 
 def get_session() -> Iterator[Session]:

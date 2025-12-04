@@ -1,9 +1,13 @@
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict
 
 
 class TodoBase(BaseModel):
     title: str
     completed: bool = False
+    due_at: datetime | None = None
+    priority: str | None = None
 
 
 class TodoCreate(TodoBase):
@@ -13,6 +17,8 @@ class TodoCreate(TodoBase):
 class TodoUpdate(BaseModel):
     title: str | None = None
     completed: bool | None = None
+    due_at: datetime | None = None
+    priority: str | None = None
 
 
 class Todo(TodoBase):

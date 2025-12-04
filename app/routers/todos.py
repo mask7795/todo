@@ -19,6 +19,9 @@ def list_todos(
     limit: int = Query(50, ge=1, le=200, description="Max items per page (1-200)"),
     offset: int = Query(0, ge=0, description="Items to skip (>=0)"),
     completed: bool | None = Query(None, description="Filter by completion status (true/false)"),
+    priority: str | None = Query(None, description="Filter by priority: low|medium|high"),
+    overdue: bool | None = Query(None, description="Filter overdue items (due_at < now)"),
+    sort_due: bool = Query(False, description="Sort by due_at ascending when true"),
 ) -> TodoList:
     if limit < 1:
         limit = 1
@@ -29,6 +32,12 @@ def list_todos(
     base_stmt = select(Todo)
     if completed is not None:
         base_stmt = base_stmt.where(Todo.completed == completed)
+    if priority is not None:
+        base_stmt = base_stmt.where(Todo.priority == priority)
+    if overdue:
+        from datetime import UTC, datetime
+
+        base_stmt = base_stmt.where(Todo.due_at.is_not(None)).where(Todo.due_at < datetime.now(UTC))
     t0 = time.perf_counter()
     try:
         total = session.exec(base_stmt).unique().all()
@@ -38,7 +47,10 @@ def list_todos(
     finally:
         record_db_timing("select_count", "todo", time.perf_counter() - t0)
     total_count = len(total)
-    stmt = base_stmt.limit(limit).offset(offset)
+    if sort_due:
+        stmt = base_stmt.order_by(Todo.due_at).limit(limit).offset(offset)
+    else:
+        stmt = base_stmt.limit(limit).offset(offset)
     t1 = time.perf_counter()
     try:
         items = [TodoSchema(**item.model_dump()) for item in session.exec(stmt)]
@@ -52,7 +64,12 @@ def list_todos(
 
 @router.post("/", response_model=TodoSchema, status_code=status.HTTP_201_CREATED)
 def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_session)]) -> Todo:
-    obj = Todo(title=todo.title, completed=todo.completed)
+    obj = Todo(
+        title=todo.title,
+        completed=todo.completed,
+        due_at=todo.due_at,
+        priority=todo.priority,
+    )
     t0 = time.perf_counter()
     try:
         session.add(obj)
@@ -94,6 +111,10 @@ def update_todo(
         todo.title = updated.title
     if updated.completed is not None:
         todo.completed = updated.completed
+    if updated.due_at is not None:
+        todo.due_at = updated.due_at
+    if updated.priority is not None:
+        todo.priority = updated.priority
     t1 = time.perf_counter()
     try:
         session.add(todo)

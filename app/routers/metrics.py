@@ -156,5 +156,21 @@ async def record_request(
     duration = time.perf_counter() - start
     route = request.scope.get("route")
     path = getattr(route, "path", request.url.path)
+    # Core counters and latency
     record_metrics(request.method, path, response.status_code, duration)
+    # Error counters
+    if response.status_code >= 400:
+        inc_http_error(request.method, response.status_code)
+    # Sizes
+    req_len = request.headers.get("content-length")
+    observe_request_size(request.method, int(req_len) if req_len is not None else None)
+    resp_len_header = response.headers.get("content-length")
+    resp_len_calc = len(response.body or b"") if hasattr(response, "body") else None
+    if resp_len_header is not None:
+        resp_len = int(resp_len_header)
+    elif isinstance(resp_len_calc, int):
+        resp_len = resp_len_calc
+    else:
+        resp_len = None
+    observe_response_size(response.status_code, resp_len)
     return response
