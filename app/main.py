@@ -16,6 +16,7 @@ app = FastAPI(title="Todo API", version="0.1.0", lifespan=lifespan)
 
 app.include_router(todos_router)
 
+
 @app.get("/", status_code=status.HTTP_200_OK)
 async def read_root() -> dict:
     return {"message": "OK", "service": "todo", "version": "0.1.0"}
