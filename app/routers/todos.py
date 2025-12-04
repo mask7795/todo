@@ -12,10 +12,10 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 
 @router.get("/", response_model=TodoList, status_code=status.HTTP_200_OK)
 def list_todos(
+    session: Annotated[Session, Depends(get_session)],
     limit: int = Query(50, ge=1, le=200, description="Max items per page (1-200)"),
     offset: int = Query(0, ge=0, description="Items to skip (>=0)"),
     completed: bool | None = Query(None, description="Filter by completion status (true/false)"),
-    session: Annotated[Session, Depends(get_session)] = None,
 ) -> TodoList:
     if limit < 1:
         limit = 1
