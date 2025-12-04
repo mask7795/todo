@@ -1,5 +1,5 @@
 # Page snapshot
 
 ```yaml
-- generic [ref=e2]: "{\"message\":\"OK\",\"service\":\"todo\",\"version\":\"0.1.0\"}"
+- generic [ref=e2]: "{\"items\":[{\"title\":\"A\",\"completed\":false,\"due_at\":null,\"priority\":null,\"id\":1},{\"title\":\"B\",\"completed\":true,\"due_at\":null,\"priority\":null,\"id\":2},{\"title\":\"C\",\"completed\":true,\"due_at\":null,\"priority\":null,\"id\":3},{\"title\":\"Playwright e2e todo\",\"completed\":false,\"due_at\":\"2099-12-31T00:00:00\",\"priority\":\"medium\",\"id\":4},{\"title\":\"Playwright e2e todo\",\"completed\":false,\"due_at\":\"2099-12-31T00:00:00\",\"priority\":\"medium\",\"id\":5},{\"title\":\"Playwright e2e todo\",\"completed\":false,\"due_at\":\"2099-12-31T00:00:00\",\"priority\":\"medium\",\"id\":6},{\"title\":\"Playwright e2e todo\",\"completed\":false,\"due_at\":\"2099-12-31T00:00:00\",\"priority\":\"medium\",\"id\":7}],\"total\":7,\"limit\":50,\"offset\":0,\"next_cursor\":null,\"has_more\":null}"
 ```
