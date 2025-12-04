@@ -18,6 +18,13 @@ Health checks:
 - Liveness: `GET /health/live` → `{ "status": "ok" }`
 - Readiness: `GET /health/ready` → `{ "status": "ready" | "not-ready" }`
 
+Todos:
+- List: `GET /todos/?limit=10&offset=0`
+- Filter: `GET /todos/?completed=true`
+- Create: `POST /todos/` with body `{ "title": "Write tests", "completed": false }`
+- Update: `PUT /todos/{id}` with body `{ "title": "Write more tests", "completed": true }`
+- Delete: `DELETE /todos/{id}`
+
 Data is persisted to a local SQLite file at `./todo.db`.
 
 ## Run Tests

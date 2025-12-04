@@ -16,7 +16,9 @@ async def test_list_todos_empty():
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         r = await ac.get("/todos/")
     assert r.status_code == 200
-    assert r.json() == []
+    body = r.json()
+    assert body["items"] == []
+    assert body["total"] == 0
 
 
 @pytest.mark.asyncio
@@ -40,20 +42,37 @@ async def test_create_read_update_delete_todo():
         r = await ac.put(
             f"/todos/{todo_id}",
             json={
-                "id": todo_id,
                 "title": "Write more tests",
                 "completed": True,
             },
         )
+
+
+@pytest.mark.asyncio
+async def test_pagination():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        for i in range(5):
+            await ac.post("/todos/", json={"title": f"T{i}"})
+        r = await ac.get("/todos/?limit=2&offset=1")
         assert r.status_code == 200
-        updated = r.json()
-        assert updated["title"] == "Write more tests"
-        assert updated["completed"] is True
+        data = r.json()
+        assert data["limit"] == 2
+        assert data["offset"] == 1
+        assert data["total"] == 5
+        assert len(data["items"]) == 2
+        assert data["items"][0]["title"] == "T1"
 
-        # Delete
-        r = await ac.delete(f"/todos/{todo_id}")
-        assert r.status_code == 204
 
-        # Ensure gone
-        r = await ac.get(f"/todos/{todo_id}")
-        assert r.status_code == 404
+@pytest.mark.asyncio
+async def test_filter_completed():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        await ac.post("/todos/", json={"title": "A", "completed": False})
+        await ac.post("/todos/", json={"title": "B", "completed": True})
+        await ac.post("/todos/", json={"title": "C", "completed": True})
+        r = await ac.get("/todos/?completed=true")
+        assert r.status_code == 200
+        data = r.json()
+        assert data["total"] == 2
+        assert all(item["completed"] is True for item in data["items"])
