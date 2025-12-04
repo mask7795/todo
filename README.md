@@ -73,4 +73,13 @@ uv run pytest -q --cov=app --cov-report=xml --cov-report=term
 open coverage.xml
 ```
 
+## Telemetry
+
+- Metrics: `GET /metrics` returns Prometheus exposition format.
+- Example scrape with curl:
+
+```zsh
+curl -s http://127.0.0.1:8000/metrics | head -20
+```
+
  

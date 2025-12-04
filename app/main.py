@@ -4,6 +4,7 @@ from fastapi import FastAPI, status
 
 from app.db import init_db
 from app.routers.health import router as health_router
+from app.routers.metrics import router as metrics_router
 from app.routers.todos import router as todos_router
 
 
@@ -28,6 +29,7 @@ app = FastAPI(title="Todo API", version="0.1.0", lifespan=lifespan, openapi_tags
 
 app.include_router(todos_router)
 app.include_router(health_router)
+app.include_router(metrics_router)
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
