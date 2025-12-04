@@ -1,0 +1,7 @@
+.toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
+.error { color: #b00020; margin: 8px 0; }
+.todos { list-style: none; padding: 0; }
+.todos li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #eee; }
+.todos li .completed { text-decoration: line-through; color: #666; }
+.meta { color: #555; font-size: 12px; margin-left: auto; }
+.pager { margin-top: 12px; display: flex; gap: 8px; }

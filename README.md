@@ -26,13 +26,13 @@ Quick checks:
 
 - Create: `POST /todos/ {"title": "Buy milk"}`
 - Get: `GET /todos/{id}`
-- Update: `PATCH /todos/{id} {"completed": true}`
-- List: `GET /todos/?limit=10&offset=0&completed=true|false`
- - List: `GET /todos/?limit=10&offset=0&completed=true|false&priority=low|medium|high&overdue=true|false&sort_due=true|false`
- - Cursor list (id-based): `GET /todos/?limit=10&cursor=<id>` (incompatible with `sort_due`)
+- Update: `PUT /todos/{id} {"completed": true}`
+- List (offset): `GET /todos/?limit=10&offset=0&completed=true|false`
+- Filters: add `priority=low|medium|high&overdue=true|false&sort_due=true|false`
+- Cursor list (id-based): `GET /todos/?limit=10&cursor=<id>` (incompatible with `sort_due`)
 - Delete: `DELETE /todos/{id}`
- - Restore: `POST /todos/{id}/restore`
- - Include deleted: `GET /todos/?include_deleted=true`
+- Restore: `POST /todos/{id}/restore`
+- Include deleted: `GET /todos/?include_deleted=true`
 
 ## Health & Metrics
 
@@ -88,6 +88,25 @@ Todos:
  - Include deleted: `GET /todos/?include_deleted=true`
 
 Data is persisted to a local SQLite file at `./todo.db`.
+
+## Frontend (Angular)
+
+An early Angular UI lives under `frontend/`.
+
+- Dev server: run the FastAPI backend, then start Angular.
+
+```zsh
+# Backend
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+# Frontend (requires Angular CLI if using full scaffold)
+# If not using CLI, open the `index.html` in your preferred dev setup.
+```
+
+Notes:
+- The Angular `AuthInterceptor` sends `X-API-Key` if `environment.apiKey` is set.
+- The `TodosService` points to `environment.apiBaseUrl` (default `http://127.0.0.1:8000`).
+- Optional: configure a proxy `frontend/proxy.conf.json` to avoid CORS, mapping `/` to `http://127.0.0.1:8000`.
 
 ## Run Tests
 

@@ -1,0 +1,62 @@
+<div class="toolbar">
+  <label>
+    Completed:
+    <select [(ngModel)]="showCompleted" (change)="fetch()">
+      <option [ngValue]="undefined">All</option>
+      <option [ngValue]="true">Only Completed</option>
+      <option [ngValue]="false">Only Active</option>
+    </select>
+  </label>
+  <label>
+    Priority:
+    <select [(ngModel)]="priority" (change)="fetch()">
+      <option [ngValue]="undefined">All</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+  </label>
+  <label>
+    Overdue:
+    <select [(ngModel)]="overdue" (change)="fetch()">
+      <option [ngValue]="undefined">All</option>
+      <option [ngValue]="true">Overdue</option>
+      <option [ngValue]="false">Not Overdue</option>
+    </select>
+  </label>
+  <label>
+    Include Deleted:
+    <select [(ngModel)]="includeDeleted" (change)="fetch()">
+      <option [ngValue]="undefined">No</option>
+      <option [ngValue]="true">Yes</option>
+    </select>
+  </label>
+  <label>
+    Sort by Due:
+    <select [(ngModel)]="sortDue" (change)="fetch()">
+      <option [ngValue]="undefined">Default</option>
+      <option [ngValue]="true">Yes</option>
+    </select>
+  </label>
+</div>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="loading">Loading...</div>
+
+<ul class="todos">
+  <li *ngFor="let t of todos">
+    <span [class.completed]="t.completed">{{ t.title }}</span>
+    <span class="meta">
+      <span *ngIf="t.priority">[{{ t.priority }}]</span>
+      <span *ngIf="t.due_at">due {{ t.due_at | date: 'short' }}</span>
+    </span>
+    <button (click)="toggleComplete(t)">{{ t.completed ? 'Mark Active' : 'Mark Done' }}</button>
+    <button (click)="delete(t)">Delete</button>
+    <button (click)="restore(t)">Restore</button>
+  </li>
+</ul>
+
+<div class="pager">
+  <button (click)="prevPage()" [disabled]="offset <= 0">Prev</button>
+  <button (click)="nextPage()" [disabled]="!hasMore">Next</button>
+</div>

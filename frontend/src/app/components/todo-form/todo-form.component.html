@@ -1,0 +1,14 @@
+<form (ngSubmit)="submit()">
+  <div class="row">
+    <input type="text" [(ngModel)]="title" name="title" placeholder="New todo title" />
+    <select [(ngModel)]="priority" name="priority">
+      <option [ngValue]="null">Priority</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+    </select>
+    <input type="datetime-local" [(ngModel)]="due_at" name="due_at" />
+    <button type="submit">Add</button>
+  </div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+</form>
