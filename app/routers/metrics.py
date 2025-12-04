@@ -1,5 +1,5 @@
 import time
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 
 from fastapi import APIRouter, Request, Response
 from prometheus_client import (
@@ -147,9 +147,12 @@ def metrics() -> Response:
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
 
 
-async def record_request(request: Request, call_next: Callable[[Request], Response]) -> Response:
+async def record_request(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
     start = time.perf_counter()
-    response = await call_next(request)
+    response: Response = await call_next(request)
     duration = time.perf_counter() - start
     route = request.scope.get("route")
     path = getattr(route, "path", request.url.path)
