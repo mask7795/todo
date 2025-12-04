@@ -47,8 +47,9 @@ async def metrics_middleware(request: Request, call_next):
     start = time.perf_counter()
     response = await call_next(request)
     duration = time.perf_counter() - start
-    # Use route path if available to avoid query strings
-    path = request.url.path
+    # Normalize path to route template to reduce label cardinality
+    route = request.scope.get("route")
+    path = getattr(route, "path", request.url.path)
     method = request.method
     status_code = response.status_code
     with suppress(Exception):
