@@ -1,5 +1,5 @@
 import time
-from typing import Annotated
+from typing import Annotated, Any, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
@@ -34,7 +34,8 @@ def list_todos(
         offset = 0
     base_stmt = select(Todo)
     if not include_deleted:
-        base_stmt = base_stmt.where(Todo.deleted_at.is_(None))
+        # SQLAlchemy column API; mypy sees field type, so ignore
+        base_stmt = base_stmt.where(Todo.deleted_at.is_(None))  # type: ignore[union-attr]
     if completed is not None:
         base_stmt = base_stmt.where(Todo.completed == completed)
     if priority is not None:
@@ -42,7 +43,9 @@ def list_todos(
     if overdue:
         from datetime import UTC, datetime
 
-        base_stmt = base_stmt.where(Todo.due_at.is_not(None)).where(Todo.due_at < datetime.now(UTC))
+        # Guard non-null then compare; silence mypy on column methods
+        base_stmt = base_stmt.where(Todo.due_at.is_not(None))  # type: ignore[union-attr]
+        base_stmt = base_stmt.where(Todo.due_at < datetime.now(UTC))  # type: ignore[operator]
     t0 = time.perf_counter()
     try:
         total = session.exec(base_stmt).unique().all()
@@ -53,7 +56,8 @@ def list_todos(
         record_db_timing("select_count", "todo", time.perf_counter() - t0)
     total_count = len(total)
     if sort_due:
-        stmt = base_stmt.order_by(Todo.due_at).limit(limit).offset(offset)
+        # Cast for mypy: SQL column expression expected
+        stmt = base_stmt.order_by(cast(Any, Todo.due_at)).limit(limit).offset(offset)
     else:
         stmt = base_stmt.limit(limit).offset(offset)
     t1 = time.perf_counter()
