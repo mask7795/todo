@@ -14,8 +14,10 @@ test('smoke: create and list todo via UI', async ({ page, request }) => {
 
   // Navigate directly to Todos route to avoid menu timing issues
   await page.goto('/todos');
-  await page.waitForURL('**/todos');
+  // Wait for list to render (looks for a toggle button or list container)
+  await page.waitForSelector('button:has-text("Add")', { state: 'visible' });
+  await page.waitForLoadState('networkidle');
 
   // Expect new todo appears in list
-  await expect(page.getByText('Playwright e2e todo')).toBeVisible();
+  await expect(page.getByText('Playwright e2e todo', { exact: false })).toBeVisible();
 });
