@@ -5,6 +5,46 @@ from app.db import reset_db
 from app.main import app
 
 
+@pytest.mark.asyncio
+async def test_crud_flow():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # Create
+        r = await ac.post("/todos/", json={"title": "task1"})
+        assert r.status_code == 201
+        t = r.json()
+        tid = t["id"]
+        assert t["title"] == "task1"
+        assert t["completed"] is False
+
+        # Read
+        r = await ac.get(f"/todos/{tid}")
+        assert r.status_code == 200
+        assert r.json()["title"] == "task1"
+
+        # Update
+        r = await ac.put(f"/todos/{tid}", json={"title": "task1", "completed": True})
+        assert r.status_code == 200
+        assert r.json()["completed"] is True
+
+        # List
+        r = await ac.get("/todos/?limit=5&offset=0")
+        assert r.status_code == 200
+        data = r.json()
+        assert isinstance(data["items"], list)
+        assert data["total"] >= 1
+
+        # Filter
+        r = await ac.get("/todos/?completed=true")
+        assert r.status_code == 200
+        data = r.json()
+        assert all(item["completed"] for item in data["items"])
+
+        # Delete
+        r = await ac.delete(f"/todos/{tid}")
+        assert r.status_code == 204
+
+
 @pytest.fixture(autouse=True)
 def _reset_db() -> None:
     reset_db()

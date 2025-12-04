@@ -7,6 +7,7 @@ from sqlmodel import Session, select
 from app.db import get_session
 from app.models.todo import Todo
 from app.routers.metrics import inc_db_error, record_db_timing
+from app.schemas.todo import Todo as TodoSchema
 from app.schemas.todo import TodoCreate, TodoList, TodoUpdate
 
 router = APIRouter(prefix="/todos", tags=["todos"])
@@ -49,7 +50,7 @@ def list_todos(
     return TodoList(items=items, total=total_count, limit=limit, offset=offset)
 
 
-@router.post("/", response_model=Todo, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=TodoSchema, status_code=status.HTTP_201_CREATED)
 def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_session)]) -> Todo:
     obj = Todo(title=todo.title, completed=todo.completed)
     t0 = time.perf_counter()
@@ -65,7 +66,7 @@ def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_sessio
     return obj
 
 
-@router.get("/{todo_id}", response_model=Todo, status_code=status.HTTP_200_OK)
+@router.get("/{todo_id}", response_model=TodoSchema, status_code=status.HTTP_200_OK)
 def get_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> Todo:
     t0 = time.perf_counter()
     try:
@@ -80,7 +81,7 @@ def get_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) ->
     return todo
 
 
-@router.put("/{todo_id}", response_model=Todo, status_code=status.HTTP_200_OK)
+@router.put("/{todo_id}", response_model=TodoSchema, status_code=status.HTTP_200_OK)
 def update_todo(
     todo_id: int,
     updated: TodoUpdate,

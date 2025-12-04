@@ -17,6 +17,14 @@ uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 Visit http://127.0.0.1:8000/
 
+### Todos CRUD
+
+- Create: `POST /todos/ {"title": "Buy milk"}`
+- Get: `GET /todos/{id}`
+- Update: `PATCH /todos/{id} {"completed": true}`
+- List: `GET /todos/?limit=10&offset=0&completed=true|false`
+- Delete: `DELETE /todos/{id}`
+
 ## Run Tests
 
 ```zsh
