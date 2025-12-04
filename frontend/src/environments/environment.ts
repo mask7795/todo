@@ -1,6 +1,6 @@
 export const environment = {
   production: false,
-  // Use relative base so Angular dev proxy handles CORS-free API calls
-  apiBaseUrl: '',
+  // Use '/api' base so dev proxy routes API calls and avoids SPA route collision
+  apiBaseUrl: '/api',
   apiKey: 'secret'
 };

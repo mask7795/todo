@@ -75,7 +75,7 @@ Prereqs:
 	npx playwright install
 	```
 
-Run the smoke test (uses Angular dev proxy):
+Run the smoke test (uses Angular dev proxy under `/api`):
 ```zsh
 cd frontend
 export TODO_API_KEY=secret # match backend key
@@ -83,7 +83,7 @@ npx playwright test
 ```
 
 Files:
-- `playwright.config.ts`: Runs `ng serve` with `proxy.conf.json` and points tests at `http://localhost:4200`.
+- `playwright.config.ts`: Runs `ng serve` with `proxy.conf.json` and points tests at `http://localhost:4200`. API calls use `/api/*` and are proxied to FastAPI.
 - `tests-e2e/smoke.spec.ts`: Seeds a todo via API (uses `TODO_API_KEY`) and verifies it appears in the UI.
 
 ## Navigation & Dashboard
