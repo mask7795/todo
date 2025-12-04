@@ -24,6 +24,7 @@ def list_todos(
     overdue: bool | None = Query(None, description="Filter overdue items (due_at < now)"),
     sort_due: bool = Query(False, description="Sort by due_at ascending when true"),
     include_deleted: bool = Query(False, description="Include soft-deleted items when true"),
+    cursor: str | None = Query(None, description="Cursor for pagination (id-based)"),
 ) -> TodoList:
     # Ensure latest schema (handles tests and dev hot-reload)
     ensure_schema()
@@ -56,6 +57,48 @@ def list_todos(
     finally:
         record_db_timing("select_count", "todo", time.perf_counter() - t0)
     total_count = len(total)
+    # Cursor mode: only supports id-based ordering (sort_due must be false)
+    next_cursor: str | None = None
+    has_more: bool | None = None
+    if cursor is not None:
+        if sort_due:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="cursor is incompatible with sort_due",
+            )
+        try:
+            last_id = int(cursor)
+        except ValueError as err:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="invalid cursor"
+            ) from err
+        page_stmt = base_stmt.where(Todo.id > last_id)  # type: ignore[operator]
+        page_stmt = page_stmt.order_by(Todo.id).limit(limit + 1)
+        t1 = time.perf_counter()
+        try:
+            rows = list(session.exec(page_stmt))
+        except Exception:
+            inc_db_error("select_page", "todo")
+            raise
+        finally:
+            record_db_timing("select_page", "todo", time.perf_counter() - t1)
+        if len(rows) > limit:
+            has_more = True
+            next_cursor = str(rows[limit - 1].id)
+            rows = rows[:limit]
+        else:
+            has_more = False
+            next_cursor = None
+        items = [TodoSchema(**item.model_dump()) for item in rows]
+        return TodoList(
+            items=items,
+            total=total_count,
+            limit=limit,
+            offset=None,
+            next_cursor=next_cursor,
+            has_more=has_more,
+        )
+    # Offset mode
     if sort_due:
         # Cast for mypy: SQL column expression expected
         stmt = base_stmt.order_by(cast(Any, Todo.due_at)).limit(limit).offset(offset)

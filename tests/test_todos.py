@@ -97,6 +97,39 @@ async def test_list_todos_empty():
 
 
 @pytest.mark.asyncio
+async def test_cursor_pagination_basic():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # Seed 5 items
+        for i in range(5):
+            r = await ac.post("/todos/", json={"title": f"c{i}"})
+            assert r.status_code == 201
+
+        # Get first two via offset
+        r = await ac.get("/todos/?limit=2")
+        assert r.status_code == 200
+        first_page = r.json()
+        first_ids = [t["id"] for t in first_page["items"]]
+
+        # Page 2 via cursor
+        cursor = str(first_ids[-1])
+        r = await ac.get(f"/todos/?limit=2&cursor={cursor}")
+        assert r.status_code == 200
+        page2 = r.json()
+        assert page2["offset"] is None
+        ids2 = [t["id"] for t in page2["items"]]
+        assert all(i > int(cursor) for i in ids2)
+        # Optionally continue if has_more
+        nc = page2.get("next_cursor")
+        if nc:
+            r = await ac.get(f"/todos/?limit=2&cursor={nc}")
+            assert r.status_code == 200
+            page3 = r.json()
+            ids3 = [t["id"] for t in page3["items"]]
+            assert all(i > int(nc) for i in ids3)
+
+
+@pytest.mark.asyncio
 async def test_create_read_update_delete_todo():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:

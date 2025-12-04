@@ -29,6 +29,7 @@ Quick checks:
 - Update: `PATCH /todos/{id} {"completed": true}`
 - List: `GET /todos/?limit=10&offset=0&completed=true|false`
  - List: `GET /todos/?limit=10&offset=0&completed=true|false&priority=low|medium|high&overdue=true|false&sort_due=true|false`
+ - Cursor list (id-based): `GET /todos/?limit=10&cursor=<id>` (incompatible with `sort_due`)
 - Delete: `DELETE /todos/{id}`
  - Restore: `POST /todos/{id}/restore`
  - Include deleted: `GET /todos/?include_deleted=true`
@@ -79,6 +80,7 @@ Health checks:
 Todos:
 - List: `GET /todos/?limit=10&offset=0`
 - Filter: `GET /todos/?completed=true`
+ - Cursor list (id-based): `GET /todos/?limit=10&cursor=<id>`
 - Create: `POST /todos/` with body `{ "title": "Write tests", "completed": false }`
 - Update: `PUT /todos/{id}` with body `{ "title": "Write more tests", "completed": true }`
 - Delete: `DELETE /todos/{id}`

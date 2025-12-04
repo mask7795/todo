@@ -30,3 +30,5 @@ class TodoList(BaseModel):
     total: int
     limit: int | None = None
     offset: int | None = None
+    next_cursor: str | None = None
+    has_more: bool | None = None
