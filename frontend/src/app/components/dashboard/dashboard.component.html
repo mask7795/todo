@@ -1,0 +1,13 @@
+<div class="dashboard" *ngIf="!loading; else loadingTpl">
+  <h2>Dashboard</h2>
+  <div class="cards">
+    <div class="card"><div class="label">Total</div><div class="value">{{ total }}</div></div>
+    <div class="card"><div class="label">Completed</div><div class="value">{{ completed }}</div></div>
+    <div class="card"><div class="label">Deleted</div><div class="value">{{ deleted }}</div></div>
+    <div class="card overdue"><div class="label">Overdue</div><div class="value">{{ overdue }}</div></div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <p>Loading dashboard…</p>
+  </ng-template>

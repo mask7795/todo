@@ -58,6 +58,39 @@ What’s covered:
 - TodoListComponent: init load, toggle complete, delete, restore, filters, cursor.
 - TodoFormComponent: validation and create request body.
 
+## E2E Smoke (Playwright)
+
+This project includes a lightweight Playwright smoke test that boots the Angular dev server with the dev proxy and exercises the backend via the UI.
+
+Prereqs:
+- Backend running locally (FastAPI):
+	```zsh
+	uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+	```
+- Node environment with Angular CLI installed (`ng`).
+- Playwright installed in the frontend workspace:
+	```zsh
+	cd frontend
+	npm i -D @playwright/test
+	npx playwright install
+	```
+
+Run the smoke test:
+```zsh
+cd frontend
+npx playwright test
+```
+
+Files:
+- `playwright.config.ts`: Runs `ng serve` with `proxy.conf.json` and points tests at `http://localhost:4200`.
+- `tests-e2e/smoke.spec.ts`: Creates a todo via the UI and verifies it appears.
+
+## Navigation & Dashboard
+
+- Top menu with links to `Dashboard` and `Todos`.
+- `Dashboard` shows summary stats: total, completed, deleted, overdue.
+- Routes defined in `src/app/app.routes.ts`; router provided in `src/main.ts`.
+
 ## Running end-to-end tests
 
 For end-to-end (e2e) testing, run:
