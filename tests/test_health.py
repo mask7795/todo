@@ -30,3 +30,7 @@ async def test_metrics_endpoint():
     assert r.status_code == 200
     assert r.headers.get("content-type", "").startswith("text/plain")
     assert r.text.startswith("# HELP")
+    # Basic metrics present
+    assert "http_requests_total" in r.text
+    assert "http_request_duration_seconds" in r.text
+    assert "http_requests_class_total" in r.text

@@ -12,6 +12,7 @@ router = APIRouter(prefix="", tags=["metrics"])  # root-level path
 _registry: CollectorRegistry | None = None
 _requests_total: Counter | None = None
 _request_duration: Histogram | None = None
+_requests_class_total: Counter | None = None
 
 
 def get_registry() -> CollectorRegistry:
@@ -30,15 +31,27 @@ def get_registry() -> CollectorRegistry:
             ["method", "path", "status"],
             registry=_registry,
         )
+        _requests_class_total = Counter(
+            "http_requests_class_total",
+            "Total HTTP requests by status class",
+            ["method", "status_class"],
+            registry=_registry,
+        )
     return _registry
 
 
 def record_request(method: str, path: str, status: int, duration_seconds: float) -> None:
     # Ensure metrics are initialized
     get_registry()
-    assert _requests_total is not None and _request_duration is not None
+    assert (
+        _requests_total is not None
+        and _request_duration is not None
+        and _requests_class_total is not None
+    )
     _requests_total.labels(method=method, path=path, status=str(status)).inc()
     _request_duration.labels(method=method, path=path, status=str(status)).observe(duration_seconds)
+    status_class = f"{status // 100}xx"
+    _requests_class_total.labels(method=method, status_class=status_class).inc()
 
 
 @router.get("/metrics")
