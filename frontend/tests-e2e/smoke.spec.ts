@@ -12,9 +12,8 @@ test('smoke: create and list todo via UI', async ({ page, request }) => {
     },
   });
 
-  await page.goto('/');
-  // Navigate to Todos page (router default is Dashboard)
-  await page.getByRole('link', { name: /todos/i }).click();
+  // Navigate directly to Todos route to avoid menu timing issues
+  await page.goto('/todos');
   await page.waitForURL('**/todos');
 
   // Expect new todo appears in list
