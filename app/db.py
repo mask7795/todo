@@ -25,6 +25,13 @@ def ensure_schema() -> None:
     Safe to run multiple times.
     """
     with engine.connect() as conn:
+        # Ensure base tables exist before attempting ALTERs
+        tbl = conn.execute(
+            text("SELECT name FROM sqlite_master WHERE type='table' AND name='todo'")
+        ).fetchone()
+        if tbl is None:
+            # Create tables if missing
+            SQLModel.metadata.create_all(bind=engine)
         # Inspect existing columns
         cols = conn.execute(text("PRAGMA table_info('todo')")).fetchall()
         existing = {row[1] for row in cols}  # row[1] = name
