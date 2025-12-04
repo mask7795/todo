@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Response
+import time
+from collections.abc import Callable
+
+from fastapi import APIRouter, Request, Response
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
     CollectorRegistry,
@@ -87,7 +90,7 @@ def get_registry() -> CollectorRegistry:
     return _registry
 
 
-def record_request(method: str, path: str, status: int, duration_seconds: float) -> None:
+def record_metrics(method: str, path: str, status: int, duration_seconds: float) -> None:
     # Ensure metrics are initialized
     get_registry()
     assert (
@@ -142,3 +145,13 @@ def metrics() -> Response:
     registry = get_registry()
     data = generate_latest(registry)
     return Response(content=data, media_type=CONTENT_TYPE_LATEST)
+
+
+async def record_request(request: Request, call_next: Callable[[Request], Response]) -> Response:
+    start = time.perf_counter()
+    response = await call_next(request)
+    duration = time.perf_counter() - start
+    route = request.scope.get("route")
+    path = getattr(route, "path", request.url.path)
+    record_metrics(request.method, path, response.status_code, duration)
+    return response

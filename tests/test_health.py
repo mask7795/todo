@@ -5,6 +5,19 @@ from app.main import app
 
 
 @pytest.mark.asyncio
+async def test_liveness_and_readiness():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        r = await ac.get("/health/live")
+        assert r.status_code == 200
+        assert r.json()["status"] == "ok"
+
+        r = await ac.get("/health/ready")
+        assert r.status_code == 200
+        assert r.json()["status"] in {"ready", "not-ready"}
+
+
+@pytest.mark.asyncio
 async def test_liveness():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
@@ -26,7 +39,14 @@ async def test_readiness():
 async def test_metrics_endpoint():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # Hit root and todos to generate some metrics
+        await ac.get("/")
+        await ac.get("/todos/")
         r = await ac.get("/metrics")
+        assert r.status_code == 200
+        body = r.text
+        assert "http_requests_total" in body
+        assert "http_request_duration_seconds" in body
     assert r.status_code == 200
     assert r.headers.get("content-type", "").startswith("text/plain")
     assert r.text.startswith("# HELP")

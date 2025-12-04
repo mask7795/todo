@@ -25,6 +25,19 @@ Visit http://127.0.0.1:8000/
 - List: `GET /todos/?limit=10&offset=0&completed=true|false`
 - Delete: `DELETE /todos/{id}`
 
+## Health & Metrics
+
+- Liveness: `GET /health/live` → `{ "status": "ok" }`
+- Readiness: `GET /health/ready` → `{ "status": "ready" | "not-ready" }`
+- Metrics: `GET /metrics` (Prometheus text exposition)
+
+Examples:
+```zsh
+curl -s http://127.0.0.1:8000/health/live
+curl -s http://127.0.0.1:8000/health/ready
+curl -s http://127.0.0.1:8000/metrics | head -n 20
+```
+
 ## Run Tests
 
 ```zsh
@@ -72,12 +85,12 @@ uv run pytest -q --cov=app --cov-report=term
 
 ## Project Layout
 - `app/main.py`: FastAPI app and root route
-- `app/routers/todos.py`: `/todos` router (demo in-memory list)
-- `app/schemas/todo.py`: Pydantic v2 model for todos
-- `tests/test_smoke.py`: async smoke test with `httpx.AsyncClient`
- - `tests/test_todos.py`: validates `/todos` returns an empty list
+ - `app/routers/todos.py`: `/todos` router (SQLModel + SQLite)
+ - `app/schemas/todo.py`: Pydantic v2 models for todos
+ - `tests/test_smoke.py`: async smoke test with `httpx.AsyncClient`
+ - `tests/test_todos.py`: CRUD, pagination, filtering
  - `app/routers/health.py`: health endpoints (`/health/live`, `/health/ready`)
- - `tests/test_health.py`: tests for health endpoints
+ - `tests/test_health.py`: tests for health and metrics endpoints
 
 ## Notes
 - The app uses SQLModel + SQLite for persistence (`./todo.db`).
