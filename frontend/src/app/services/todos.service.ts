@@ -9,6 +9,7 @@ export interface Todo {
   completed: boolean;
   due_at?: string | null;
   priority?: string | null;
+  deleted_at?: string | null;
 }
 
 export interface TodoList {

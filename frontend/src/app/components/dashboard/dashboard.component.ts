@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TodosService, Todo } from '../../services/todos.service';
+import { TodosService, Todo, TodoList } from '../../services/todos.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,8 +20,10 @@ export class DashboardComponent {
   constructor(private todos: TodosService) {}
 
   async ngOnInit() {
-    const res = await this.todos.list({ include_deleted: true, limit: 1000 });
-    const items: Todo[] = res.items ?? res; // service may return array or paged
+    const res: TodoList = await firstValueFrom(
+      this.todos.list({ include_deleted: true, limit: 1000 })
+    );
+    const items: Todo[] = res.items ?? [];
     this.total = items.length;
     this.completed = items.filter(t => t.completed).length;
     this.deleted = items.filter(t => !!t.deleted_at).length;

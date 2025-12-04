@@ -41,4 +41,18 @@ describe('TodosService', () => {
     expect(req.request.method).toBe('POST');
     req.flush(created);
   });
+
+  it('builds list URL with filters', () => {
+    service.list({ limit: 5, offset: 10, priority: 'high', overdue: true, sort_due: true }).subscribe();
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/todos/?limit=5&offset=10&priority=high&overdue=true&sort_due=true`);
+    expect(req.request.method).toBe('GET');
+    req.flush({ items: [], total: 0 });
+  });
+
+  it('uses cursor param when provided', () => {
+    service.list({ limit: 5, cursor: '12' }).subscribe();
+    const req = httpMock.expectOne(`${environment.apiBaseUrl}/todos/?limit=5&cursor=12`);
+    expect(req.request.method).toBe('GET');
+    req.flush({ items: [], total: 0 });
+  });
 });

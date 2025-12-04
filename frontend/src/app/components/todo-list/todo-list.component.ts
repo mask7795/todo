@@ -95,4 +95,10 @@ export class TodoListComponent implements OnInit {
       this.fetch();
     }
   }
+
+  isOverdue(t: Todo): boolean {
+    if (!t.due_at) return false;
+    const due = new Date(t.due_at).getTime();
+    return Date.now() > due;
+  }
 }

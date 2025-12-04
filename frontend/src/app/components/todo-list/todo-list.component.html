@@ -45,14 +45,15 @@
 
 <ul class="todos">
   <li *ngFor="let t of todos">
-    <span [class.completed]="t.completed">{{ t.title }}</span>
+    <span [class.completed]="t.completed" [class.deleted]="t.deleted_at" [class.overdue]="isOverdue(t)">{{ t.title }}</span>
     <span class="meta">
       <span *ngIf="t.priority">[{{ t.priority }}]</span>
       <span *ngIf="t.due_at">due {{ t.due_at | date: 'short' }}</span>
+      <span *ngIf="t.deleted_at" class="badge">deleted</span>
     </span>
     <button (click)="toggleComplete(t)">{{ t.completed ? 'Mark Active' : 'Mark Done' }}</button>
     <button (click)="delete(t)">Delete</button>
-    <button (click)="restore(t)">Restore</button>
+    <button (click)="restore(t)" [disabled]="!t.deleted_at">Restore</button>
   </li>
 </ul>
 
