@@ -1,3 +1,32 @@
+# FastAPI Todo – Scaffold
+
+Minimal FastAPI app scaffold with uv-based environment and a smoke test.
+
+## Quick Start
+
+```zsh
+uv venv
+uv add fastapi uvicorn pytest httpx
+```
+
+## Run the Dev Server
+
+```zsh
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Visit http://127.0.0.1:8000/
+
+## Run Tests
+
+```zsh
+uv run pytest -q
+```
+
+## Layout
+
+- `app/main.py` – FastAPI app with a root route
+- `tests/test_smoke.py` – Async smoke test hitting `/`
 # Todo API (FastAPI)
 
 [![CI](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml/badge.svg)](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml)
