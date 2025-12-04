@@ -14,7 +14,8 @@ async def liveness() -> dict:
 async def readiness() -> dict:
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            # Use SQLAlchemy 2.x API to execute a simple driver SQL for readiness.
+            conn.exec_driver_sql("SELECT 1")
         return {"status": "ready"}
     except Exception:
         return {"status": "not-ready"}
