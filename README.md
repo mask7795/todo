@@ -82,6 +82,8 @@ Todos:
 - Create: `POST /todos/` with body `{ "title": "Write tests", "completed": false }`
 - Update: `PUT /todos/{id}` with body `{ "title": "Write more tests", "completed": true }`
 - Delete: `DELETE /todos/{id}`
+ - Restore: `POST /todos/{id}/restore`
+ - Include deleted: `GET /todos/?include_deleted=true`
 
 Data is persisted to a local SQLite file at `./todo.db`.
 
