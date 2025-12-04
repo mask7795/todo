@@ -11,7 +11,7 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 
 @router.get("/", response_model=list[Todo], status_code=status.HTTP_200_OK)
 def list_todos(session: Annotated[Session, Depends(get_session)]) -> list[Todo]:
-    return session.exec(select(Todo)).all()
+    return list(session.exec(select(Todo)))
 
 
 @router.post("/", response_model=Todo, status_code=status.HTTP_201_CREATED)
