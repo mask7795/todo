@@ -20,6 +20,6 @@ test('smoke: create and list todo via UI', async ({ page, request }) => {
   await expect(page.locator('ul.todos')).toBeVisible({ timeout: 15000 });
   await page.waitForLoadState('networkidle');
 
-  // Expect new todo appears in list
-  await expect(page.locator('ul.todos')).toContainText('Playwright e2e todo', { timeout: 15000 });
+  // Expect new todo appears in list (match specific list item)
+  await expect(page.locator('ul.todos li:has-text("Playwright e2e todo")')).toBeVisible({ timeout: 15000 });
 });
