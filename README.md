@@ -19,7 +19,7 @@ Data is persisted to a local SQLite file at `./todo.db`.
 ## Run Tests
 
 ```zsh
-uv run pytest -q
+uv run pytest -q --cov=app --cov-report=term
 ```
 
 ## Project Layout
@@ -50,4 +50,12 @@ Install and enable hooks to auto-check/format on commit:
 uv sync --all-groups
 uv run pre-commit install
 uv run pre-commit run --all-files
+```
+
+## Coverage
+- CI uploads `coverage.xml` as an artifact; locally you can generate coverage with:
+
+```zsh
+uv run pytest -q --cov=app --cov-report=xml --cov-report=term
+open coverage.xml
 ```
