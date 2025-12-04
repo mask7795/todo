@@ -22,14 +22,13 @@ test('smoke: create and list todo via UI', async ({ page, request }, testInfo) =
   // Navigate directly to Todos route to avoid menu timing issues
   await page.goto('/todos');
   await page.waitForLoadState('domcontentloaded');
-  // Wait for UI readiness
-  await expect(page.locator('div.toolbar')).toBeVisible({ timeout: 15000 });
-  await expect(page.locator('ul.todos')).toBeVisible({ timeout: 15000 });
+  // Wait for UI readiness using testids
+  await expect(page.locator('[data-testid="todos-list"]')).toBeVisible({ timeout: 15000 });
   await page.waitForLoadState('networkidle');
 
   // Expect new todo appears in list (match specific list item)
   try {
-    await expect(page.locator('ul.todos li:has-text("Playwright e2e todo")')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('[data-testid="todo-item"] >> [data-testid="todo-title"]:has-text("Playwright e2e todo")')).toBeVisible({ timeout: 15000 });
   } catch (err) {
     const html = await page.content();
     await testInfo.attach('page.html', { body: Buffer.from(html), contentType: 'text/html' });
