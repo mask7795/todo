@@ -2,6 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('smoke: create and list todo via UI', async ({ page }) => {
   await page.goto('/');
+  // Navigate to Todos page (router default is Dashboard)
+  await page.getByRole('link', { name: /todos/i }).click();
+  await page.waitForURL('**/todos');
 
   // Fill form
   await page.getByPlaceholder('New todo title').fill('Playwright e2e todo');
