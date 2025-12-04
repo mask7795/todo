@@ -1,5 +1,7 @@
 # Todo API (FastAPI)
 
+[![CI](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml/badge.svg)](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml)
+
 Minimal FastAPI scaffold with a root endpoint and an async smoke test.
 
 ## Quick Start
