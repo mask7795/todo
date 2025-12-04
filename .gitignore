@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# venvs
+.venv/
+
+# coverage and test artifacts
+.coverage
+coverage.xml
+.pytest_cache/
+
+# Ruff cache
+.ruff_cache/
+
+# VS Code
+.vscode/
