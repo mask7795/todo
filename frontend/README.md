@@ -78,12 +78,13 @@ Prereqs:
 Run the smoke test:
 ```zsh
 cd frontend
+export TODO_API_KEY=secret # match backend key
 npx playwright test
 ```
 
 Files:
 - `playwright.config.ts`: Runs `ng serve` with `proxy.conf.json` and points tests at `http://localhost:4200`.
-- `tests-e2e/smoke.spec.ts`: Creates a todo via the UI and verifies it appears.
+- `tests-e2e/smoke.spec.ts`: Seeds a todo via API (uses `TODO_API_KEY`) and verifies it appears in the UI.
 
 ## Navigation & Dashboard
 
