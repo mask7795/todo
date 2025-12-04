@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'http://127.0.0.1:8000',
+  // Use relative base so Angular dev proxy handles CORS-free API calls
+  apiBaseUrl: '',
   apiKey: 'secret'
 };

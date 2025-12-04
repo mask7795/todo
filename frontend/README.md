@@ -75,7 +75,7 @@ Prereqs:
 	npx playwright install
 	```
 
-Run the smoke test:
+Run the smoke test (uses Angular dev proxy):
 ```zsh
 cd frontend
 export TODO_API_KEY=secret # match backend key
