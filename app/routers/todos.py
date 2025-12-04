@@ -73,7 +73,7 @@ def list_todos(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="invalid cursor"
             ) from err
         page_stmt = base_stmt.where(Todo.id > last_id)  # type: ignore[operator]
-        page_stmt = page_stmt.order_by(Todo.id).limit(limit + 1)
+        page_stmt = page_stmt.order_by(cast(Any, Todo.id)).limit(limit + 1)
         t1 = time.perf_counter()
         try:
             rows = list(session.exec(page_stmt))
