@@ -34,3 +34,6 @@ async def test_metrics_endpoint():
     assert "http_requests_total" in r.text
     assert "http_request_duration_seconds" in r.text
     assert "http_requests_class_total" in r.text
+    assert "http_errors_total" in r.text
+    assert "http_request_size_bytes" in r.text
+    assert "http_response_size_bytes" in r.text
