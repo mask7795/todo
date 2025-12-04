@@ -20,6 +20,7 @@ Visit http://127.0.0.1:8000/
 Quick checks:
 - Root: http://127.0.0.1:8000/
 - Metrics: http://127.0.0.1:8000/metrics
+ - Health: http://127.0.0.1:8000/health/live
 
 ### Todos CRUD
 
