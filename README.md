@@ -30,6 +30,8 @@ Quick checks:
 - List: `GET /todos/?limit=10&offset=0&completed=true|false`
  - List: `GET /todos/?limit=10&offset=0&completed=true|false&priority=low|medium|high&overdue=true|false&sort_due=true|false`
 - Delete: `DELETE /todos/{id}`
+ - Restore: `POST /todos/{id}/restore`
+ - Include deleted: `GET /todos/?include_deleted=true`
 
 ## Health & Metrics
 

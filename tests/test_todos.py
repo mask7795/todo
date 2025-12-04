@@ -13,14 +13,49 @@ async def test_crud_flow():
         r = await ac.post("/todos/", json={"title": "task1"})
         assert r.status_code == 201
         t = r.json()
-        tid = t["id"]
         assert t["title"] == "task1"
         assert t["completed"] is False
+
+
+@pytest.mark.asyncio
+async def test_soft_delete_and_restore():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # Create a todo
+        r = await ac.post("/todos/", json={"title": "Soft"})
+        assert r.status_code == 201
+        tid = r.json()["id"]
+
+        # Delete (soft)
+        r = await ac.delete(f"/todos/{tid}")
+        assert r.status_code == 204
+
+        # Should not appear by default
+        r = await ac.get("/todos/")
+        assert r.status_code == 200
+        body = r.json()
+        assert all(item["id"] != tid for item in body["items"])  # excluded
+
+        # Include deleted
+        r = await ac.get("/todos/?include_deleted=true")
+        assert r.status_code == 200
+        body = r.json()
+        assert any(item["id"] == tid for item in body["items"])  # included
+
+        # Restore
+        r = await ac.post(f"/todos/{tid}/restore")
+        assert r.status_code == 200
+
+        # Appears again in default listing
+        r = await ac.get("/todos/")
+        assert r.status_code == 200
+        body = r.json()
+        assert any(item["id"] == tid for item in body["items"])
 
         # Read
         r = await ac.get(f"/todos/{tid}")
         assert r.status_code == 200
-        assert r.json()["title"] == "task1"
+        assert r.json()["title"] == "Soft"
 
         # Update
         r = await ac.put(f"/todos/{tid}", json={"title": "task1", "completed": True})

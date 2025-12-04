@@ -4,7 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 
-from app.db import get_session
+from app.db import ensure_schema, get_session
 from app.models.todo import Todo
 from app.routers.metrics import inc_db_error, record_db_timing
 from app.schemas.todo import Todo as TodoSchema
@@ -22,7 +22,10 @@ def list_todos(
     priority: str | None = Query(None, description="Filter by priority: low|medium|high"),
     overdue: bool | None = Query(None, description="Filter overdue items (due_at < now)"),
     sort_due: bool = Query(False, description="Sort by due_at ascending when true"),
+    include_deleted: bool = Query(False, description="Include soft-deleted items when true"),
 ) -> TodoList:
+    # Ensure latest schema (handles tests and dev hot-reload)
+    ensure_schema()
     if limit < 1:
         limit = 1
     if limit > 200:
@@ -30,6 +33,8 @@ def list_todos(
     if offset < 0:
         offset = 0
     base_stmt = select(Todo)
+    if not include_deleted:
+        base_stmt = base_stmt.where(Todo.deleted_at.is_(None))
     if completed is not None:
         base_stmt = base_stmt.where(Todo.completed == completed)
     if priority is not None:
@@ -64,6 +69,7 @@ def list_todos(
 
 @router.post("/", response_model=TodoSchema, status_code=status.HTTP_201_CREATED)
 def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_session)]) -> Todo:
+    ensure_schema()
     obj = Todo(
         title=todo.title,
         completed=todo.completed,
@@ -85,6 +91,7 @@ def create_todo(todo: TodoCreate, session: Annotated[Session, Depends(get_sessio
 
 @router.get("/{todo_id}", response_model=TodoSchema, status_code=status.HTTP_200_OK)
 def get_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> Todo:
+    ensure_schema()
     t0 = time.perf_counter()
     try:
         todo = session.get(Todo, todo_id)
@@ -104,6 +111,7 @@ def update_todo(
     updated: TodoUpdate,
     session: Annotated[Session, Depends(get_session)],
 ) -> Todo:
+    ensure_schema()
     todo = session.get(Todo, todo_id)
     if not todo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
@@ -130,6 +138,7 @@ def update_todo(
 
 @router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> None:
+    ensure_schema()
     t0 = time.perf_counter()
     try:
         todo = session.get(Todo, todo_id)
@@ -142,7 +151,10 @@ def delete_todo(todo_id: int, session: Annotated[Session, Depends(get_session)])
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
     t1 = time.perf_counter()
     try:
-        session.delete(todo)
+        from datetime import UTC, datetime
+
+        todo.deleted_at = datetime.now(UTC)
+        session.add(todo)
         session.commit()
     except Exception:
         inc_db_error("delete", "todo")
@@ -150,3 +162,23 @@ def delete_todo(todo_id: int, session: Annotated[Session, Depends(get_session)])
     finally:
         record_db_timing("delete", "todo", time.perf_counter() - t1)
     return None
+
+
+@router.post("/{todo_id}/restore", response_model=TodoSchema, status_code=status.HTTP_200_OK)
+def restore_todo(todo_id: int, session: Annotated[Session, Depends(get_session)]) -> Todo:
+    ensure_schema()
+    todo = session.get(Todo, todo_id)
+    if not todo:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
+    t0 = time.perf_counter()
+    try:
+        todo.deleted_at = None
+        session.add(todo)
+        session.commit()
+        session.refresh(todo)
+    except Exception:
+        inc_db_error("restore", "todo")
+        raise
+    finally:
+        record_db_timing("restore", "todo", time.perf_counter() - t0)
+    return todo

@@ -33,6 +33,8 @@ def ensure_schema() -> None:
             conn.execute(text("ALTER TABLE todo ADD COLUMN due_at DATETIME NULL"))
         if "priority" not in existing:
             conn.execute(text("ALTER TABLE todo ADD COLUMN priority VARCHAR NULL"))
+        if "deleted_at" not in existing:
+            conn.execute(text("ALTER TABLE todo ADD COLUMN deleted_at DATETIME NULL"))
         conn.commit()
 
 
