@@ -41,7 +41,7 @@ def list_todos(
     stmt = base_stmt.limit(limit).offset(offset)
     t1 = time.perf_counter()
     try:
-        items = [item.model_dump() for item in session.exec(stmt)]
+        items = [TodoSchema(**item.model_dump()) for item in session.exec(stmt)]
     except Exception:
         inc_db_error("select_page", "todo")
         raise
@@ -90,8 +90,10 @@ def update_todo(
     todo = session.get(Todo, todo_id)
     if not todo:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Todo not found")
-    todo.title = updated.title
-    todo.completed = updated.completed
+    if updated.title is not None:
+        todo.title = updated.title
+    if updated.completed is not None:
+        todo.completed = updated.completed
     t1 = time.perf_counter()
     try:
         session.add(todo)
