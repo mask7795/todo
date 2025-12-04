@@ -72,3 +72,11 @@ uv run pre-commit run --all-files
 uv run pytest -q --cov=app --cov-report=xml --cov-report=term
 open coverage.xml
 ```
+
+### Codecov
+
+Coverage is uploaded to Codecov on each CI run. Add the `CODECOV_TOKEN` secret in your repository settings to enable uploads.
+
+Badge (after Codecov is configured):
+
+![codecov](https://codecov.io/gh/mask7795/todo/branch/main/graph/badge.svg)
