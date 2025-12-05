@@ -38,8 +38,6 @@ jobs:
         run: uv run mypy app
 
       - name: Pytest
-        env:
-          TODO_API_KEY: secret
         run: uv run pytest -q --cov=app --cov-report=term --cov-report=xml
 
       - name: Upload coverage report

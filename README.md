@@ -176,6 +176,7 @@ uv run pytest -q --cov=app --cov-report=term
 
 - CI does not set `TODO_API_KEY`; tests run with auth disabled by default.
 - Auth-specific tests enable auth via `monkeypatch.setenv("TODO_API_KEY", "secret")` and assert 401/OK paths.
+- A test-wide autouse fixture (`tests/conftest.py`) clears `TODO_API_KEY` so external env/secrets cannot unintentionally enable auth during the suite.
 - Local runs: keep `TODO_API_KEY` unset to run the full suite without auth.
 - Run only auth tests:
 
