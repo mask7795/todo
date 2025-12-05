@@ -18,8 +18,8 @@ echo "Logs: ${LOG_FILE} | PID: ${PID_FILE}"
 
 # Ensure dependencies are installed
 if [ ! -d node_modules ]; then
-  echo "node_modules missing; installing with npm ci --no-optional (fallback to install)"
-  npm ci --no-optional || npm install --no-optional
+  echo "node_modules missing; installing (prefer npm ci, fallback to npm install)"
+  npm ci || npm install
 fi
 
 # Start the server

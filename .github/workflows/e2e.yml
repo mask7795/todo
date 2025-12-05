@@ -28,7 +28,7 @@ jobs:
         working-directory: frontend
         run: |
           rm -rf node_modules package-lock.json
-          npm ci --no-optional || npm install --no-optional
+          npm install
           npm cache verify
 
       - name: Install Playwright Browsers
