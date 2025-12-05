@@ -66,15 +66,32 @@ jobs:
           ../scripts/start-backend.sh > backend.log 2>&1 & echo $! > backend.pid
           # Start frontend
           npm run start:frontend > frontend.log 2>&1 & echo $! > frontend.pid
+          # Verify frontend is still running after short grace; retry once if exited
+          sleep 3
+          if ! kill -0 $(cat frontend.pid) 2>/dev/null; then
+            echo "Frontend exited early; retrying start once..."
+            npm run start:frontend > frontend.log 2>&1 & echo $! > frontend.pid
+          fi
 
           # Wait for backend and frontend to be available
+          READY=0
           for i in {1..90}; do
-            if curl -fsS http://127.0.0.1:8000/health/live >/dev/null \
-              && curl -fsS http://127.0.0.1:4200 >/dev/null \
-              && curl -fsS http://127.0.0.1:4200/api/health/live >/dev/null; then
-              echo "Servers are up"; break; fi
+            BE_OK=0; FE_OK=0; PX_OK=0
+            curl -fsS http://127.0.0.1:8000/health/live >/dev/null && BE_OK=1 || true
+            curl -fsS http://127.0.0.1:4200/ >/dev/null && FE_OK=1 || true
+            curl -fsS http://127.0.0.1:4200/api/health/live >/dev/null && PX_OK=1 || true
+            if [[ "$BE_OK" == "1" && "$FE_OK" == "1" && "$PX_OK" == "1" ]]; then
+              echo "Servers are up"; READY=1; break;
+            fi
+            # Fail fast hints: show short status and check processes
+            [[ $((i % 10)) -eq 0 ]] && echo "Backend:$BE_OK Frontend:$FE_OK Proxy:$PX_OK"
+            if ! kill -0 $(cat backend.pid) 2>/dev/null; then echo "Backend process not running"; fi
+            if ! kill -0 $(cat frontend.pid) 2>/dev/null; then echo "Frontend process not running"; fi
             echo "Waiting for servers ($i/90)..."; sleep 2;
           done
+          if [[ "$READY" != "1" ]]; then
+            echo "Servers did not become ready in time."; exit 1
+          fi
 
           echo '--- Curl diagnostics ---'
           curl -v http://127.0.0.1:8000/health/live || true
