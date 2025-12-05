@@ -4,7 +4,7 @@ set -euo pipefail
 # Start Angular dev server mirroring CI settings
 # - Binds to 127.0.0.1:4200
 # - Uses proxy.conf.json
-# - Disables host check & HMR
+# - Disables HMR
 # - Enables verbose logging
 # Logs to frontend.log and writes PID to frontend.pid
 
@@ -27,7 +27,6 @@ npx ng serve \
   --host 127.0.0.1 \
   --port 4200 \
   --proxy-config proxy.conf.json \
-  --disable-host-check \
   --verbose \
   --hmr=false \
   > "${LOG_FILE}" 2>&1 & echo $! > "${PID_FILE}"
@@ -41,7 +40,6 @@ if ! kill -0 $(cat "${PID_FILE}") 2>/dev/null; then
     --host 127.0.0.1 \
     --port 4200 \
     --proxy-config proxy.conf.json \
-    --disable-host-check \
     --verbose \
     --hmr=false \
     > "${LOG_FILE}" 2>&1 & echo $! > "${PID_FILE}"

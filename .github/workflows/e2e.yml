@@ -65,13 +65,13 @@ jobs:
           # Start backend
           ../scripts/start-backend.sh > backend.log 2>&1 & echo $! > backend.pid
           # Start frontend via npx to avoid npm script resolution issues
-          npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --disable-host-check --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
+          npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
           # Verify frontend is still running after short grace; retry once if exited
           sleep 3
           if ! kill -0 $(cat frontend.pid) 2>/dev/null; then
             echo "Frontend exited early; retrying start once..."
             echo '--- frontend.log (early exit) ---'; tail -n +1 frontend.log || true
-            npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --disable-host-check --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
+            npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
           fi
 
           # Wait for backend and frontend to be available
