@@ -70,6 +70,7 @@ jobs:
           sleep 3
           if ! kill -0 $(cat frontend.pid) 2>/dev/null; then
             echo "Frontend exited early; retrying start once..."
+            echo '--- frontend.log (early exit) ---'; tail -n +1 frontend.log || true
             npm run start:frontend > frontend.log 2>&1 & echo $! > frontend.pid
           fi
 
