@@ -44,7 +44,7 @@ async def test_read_endpoints_remain_open(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setenv("TODO_API_KEY", "secret")
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        r = await ac.get("/todos/")
+        r = await ac.get("/todos/?limit=1&offset=0")
         assert r.status_code == 200
         r = await ac.get("/")
         assert r.status_code == 200
