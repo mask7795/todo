@@ -82,6 +82,7 @@ npx playwright show-trace "frontend/test-results/smoke-smoke-create-and-list-tod
 # Todo API (FastAPI)
 
 [![CI](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml/badge.svg)](https://github.com/maxschlappkohl/todo/actions/workflows/ci.yml)
+[![e2e](https://github.com/maxschlappkohl/todo/actions/workflows/e2e.yml/badge.svg)](https://github.com/maxschlappkohl/todo/actions/workflows/e2e.yml)
 
 Minimal FastAPI scaffold with a root endpoint and an async smoke test.
 
