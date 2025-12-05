@@ -21,7 +21,7 @@ export class DashboardComponent {
 
   async ngOnInit() {
     const res: TodoList = await firstValueFrom(
-      this.todos.list({ include_deleted: true, limit: 1000 })
+      this.todos.list({ include_deleted: true, limit: 200 })
     );
     const items: Todo[] = res.items ?? [];
     this.total = items.length;
