@@ -21,4 +21,6 @@ coverage.xml
 
 # Node
 frontend/node_modules/
+frontend/*.pid
+frontend/*.log
 frontend/*.log

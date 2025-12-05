@@ -145,6 +145,27 @@ Notes:
 	- `curl -v http://127.0.0.1:4200/api/health/live`
 	- `tail -n +1 frontend/frontend.log`
 
+Auth tip:
+- To enable authenticated write calls from the UI, set `environment.apiKey` (or export `TODO_API_KEY=secret` for the backend and configure the frontend env accordingly). The interceptor will add `X-API-Key` automatically for requests.
+
+Configure in Angular:
+
+```ts
+// frontend/src/environments/environment.ts
+export const environment = {
+	production: false,
+	apiBaseUrl: 'http://127.0.0.1:8000',
+	apiKey: 'secret', // interceptor sends as X-API-Key
+};
+```
+
+For production builds, set `apiKey` in `environment.prod.ts` or via your configuration/secrets management.
+
+Production guidance:
+- Do not commit real API keys. Prefer environment-specific config, CI/CD secrets, or runtime-config files.
+- Example with Angular file replacements: set `apiKey` in `environment.prod.ts` and ensure `angular.json` uses the prod file for `configurations: production`.
+- Alternatively, read from a runtime config (e.g., fetch `/assets/config.json` on bootstrap) and populate the interceptor key without embedding secrets in the built bundle.
+
 ## Run Tests
 
 ```zsh
@@ -166,6 +187,46 @@ uv run pytest -q --cov=app --cov-report=term
  - API key (optional): set `TODO_API_KEY` env var to require `X-API-Key` on write routes
 	 - Protected routes: `POST /todos/`, `PUT /todos/{id}`, `DELETE /todos/{id}`, `POST /todos/{id}/restore`
 	 - Example: `TODO_API_KEY=secret uv run uvicorn app.main:app --reload ...` and send header `X-API-Key: secret`
+
+### Authenticated Requests (API Key)
+
+When `TODO_API_KEY` is set, write operations require the `X-API-Key` header.
+
+Examples:
+
+```zsh
+# Start backend with an API key
+export TODO_API_KEY=secret
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+# Create a todo (protected: requires X-API-Key)
+curl -s -X POST \
+	http://127.0.0.1:8000/todos/ \
+	-H "Content-Type: application/json" \
+	-H "X-API-Key: secret" \
+	-d '{"title": "Buy milk"}' | jq
+
+# Update a todo (protected)
+curl -s -X PUT \
+	http://127.0.0.1:8000/todos/1 \
+	-H "Content-Type: application/json" \
+	-H "X-API-Key: secret" \
+	-d '{"completed": true}' | jq
+
+# Delete a todo (protected)
+curl -s -X DELETE \
+	http://127.0.0.1:8000/todos/1 \
+	-H "X-API-Key: secret" | jq
+
+# Restore a todo (protected)
+curl -s -X POST \
+	http://127.0.0.1:8000/todos/1/restore \
+	-H "X-API-Key: secret" | jq
+```
+
+Notes:
+- Read operations (e.g., `GET /todos/`, `GET /todos/{id}`) do not require the API key.
+- Replace `secret` with your own key value if you set a different `TODO_API_KEY`.
 
 ## Lint, Format, Type-check
 
