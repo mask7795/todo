@@ -18,3 +18,6 @@ coverage.xml
 
 # Local data (SQLite DB, etc.)
 .data/
+
+# Node
+frontend/node_modules/

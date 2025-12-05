@@ -60,7 +60,7 @@ uv run pytest -q
 
 ```zsh
 cd frontend
-npm install --no-optional
+npm ci
 export TODO_API_KEY=secret
 # Runs both servers via concurrently
 npx playwright test --trace on --grep "smoke: create and list todo via UI"
@@ -127,8 +127,8 @@ uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Frontend (Angular dev server mirroring CI)
 cd frontend
-npm ci --no-optional || npm install --no-optional
-npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --disable-host-check --verbose --hmr=false
+npm ci
+npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false
 # Or with helper script that writes logs and PID:
 # from repo root
 bash scripts/start-frontend.sh
