@@ -116,6 +116,8 @@ Data is persisted to a local SQLite file at `./todo.db`.
 
 An early Angular UI lives under `frontend/`.
 
+- Toolchain: Node 20.x and npm >=10 (pinned in `frontend/package.json`).
+
 - Dev server: run the FastAPI backend, then start Angular.
 
 ```zsh
@@ -123,14 +125,25 @@ An early Angular UI lives under `frontend/`.
 export TODO_API_KEY=secret
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
-# Frontend (requires Angular CLI if using full scaffold)
-# If not using CLI, open the `index.html` in your preferred dev setup.
+# Frontend (Angular dev server mirroring CI)
+cd frontend
+npm ci --no-optional || npm install --no-optional
+npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --disable-host-check --verbose --hmr=false
+# Or with helper script that writes logs and PID:
+# from repo root
+bash scripts/start-frontend.sh
+# Or via npm alias from frontend folder
+npm run start:frontend:sh
 ```
 
 Notes:
 - The Angular `AuthInterceptor` sends `X-API-Key` if `environment.apiKey` is set.
 - The `TodosService` points to `environment.apiBaseUrl` (default `http://127.0.0.1:8000`).
-- Optional: configure a proxy `frontend/proxy.conf.json` to avoid CORS, mapping `/` to `http://127.0.0.1:8000`.
+- Dev proxy: `frontend/proxy.conf.json` maps `/api/*` → backend `/*`, allowing the UI to call `/api/...` during dev.
+- Quick checks:
+	- `curl -v http://127.0.0.1:4200/`
+	- `curl -v http://127.0.0.1:4200/api/health/live`
+	- `tail -n +1 frontend/frontend.log`
 
 ## Run Tests
 
