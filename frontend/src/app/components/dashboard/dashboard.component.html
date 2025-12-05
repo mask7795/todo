@@ -6,6 +6,10 @@
     <div class="card"><div class="label">Deleted</div><div class="value">{{ deleted }}</div></div>
     <div class="card overdue"><div class="label">Overdue</div><div class="value">{{ overdue }}</div></div>
   </div>
+  <div class="status" *ngIf="lastStatus">
+    <small data-testid="dashboard-status">Last fetch: {{ lastStatus }}</small>
+  </div>
+  <div *ngIf="errorMessage" class="error" data-testid="dashboard-error">{{ errorMessage }}</div>
 </div>
 
 <ng-template #loadingTpl>

@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 export class DashboardComponent {
   loading = true;
   errorMessage: string | null = null;
+  lastStatus: string | null = null;
   total = 0;
   completed = 0;
   deleted = 0;
@@ -33,6 +34,7 @@ export class DashboardComponent {
         if (!res || !Array.isArray(res.items)) {
           throw new Error('List response invalid');
         }
+        this.lastStatus = `page=${safety + 1} count=${res.items?.length ?? 0} has_more=${!!res.has_more}`;
         items = items.concat(res.items ?? []);
         if (res.has_more && res.next_cursor) {
           cursor = res.next_cursor || undefined;
