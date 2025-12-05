@@ -37,6 +37,15 @@ jobs:
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+      - name: Diagnostics (env & versions)
+        run: |
+          echo "PATH=$PATH"
+          which python || true
+          python --version || true
+          which uv || true
+          uv --version || true
+          uv run python -c "import fastapi,sqlmodel; print('fastapi+sqlmodel OK')" || true
+
       - name: Sync backend dependencies
         run: |
           uv venv
@@ -48,6 +57,8 @@ jobs:
           CI_WEBSERVER: '0'
         run: |
           set -euo pipefail
+          echo "Node version: $(node --version)"
+          echo "NPM version: $(npm --version)"
           # Start backend
           ../scripts/start-backend.sh > backend.log 2>&1 & echo $! > backend.pid
           # Start frontend
@@ -61,6 +72,11 @@ jobs:
               echo "Servers are up"; break; fi
             echo "Waiting for servers ($i/90)..."; sleep 2;
           done
+
+          echo '--- Curl diagnostics ---'
+          curl -v http://127.0.0.1:8000/health/live || true
+          curl -v http://localhost:4200/ || true
+          curl -v http://localhost:4200/api/health/live || true
 
           # Sanity check todos GET via proxy (non-fatal)
           curl -fsS http://localhost:4200/api/todos/ || true
