@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class DashboardComponent {
   loading = true;
+  errorMessage: string | null = null;
   total = 0;
   completed = 0;
   deleted = 0;
@@ -20,27 +21,36 @@ export class DashboardComponent {
   constructor(private todos: TodosService) {}
 
   async ngOnInit() {
-    let items: Todo[] = [];
-    let cursor: string | undefined = undefined;
-    let safety = 0;
-    // Paginate to aggregate beyond 200 safely
-    while (safety < 50) {
-      const res: TodoList = await firstValueFrom(
-        this.todos.list({ include_deleted: true, limit: 200, cursor })
-      );
-      items = items.concat(res.items ?? []);
-      if (res.has_more && res.next_cursor) {
-        cursor = res.next_cursor || undefined;
-        safety += 1;
-      } else {
-        break;
+    try {
+      let items: Todo[] = [];
+      let cursor: string | undefined = undefined;
+      let safety = 0;
+      // Paginate to aggregate beyond 200 safely
+      while (safety < 50) {
+        const res: TodoList = await firstValueFrom(
+          this.todos.list({ include_deleted: true, limit: 200, cursor })
+        );
+        if (!res || !Array.isArray(res.items)) {
+          throw new Error('List response invalid');
+        }
+        items = items.concat(res.items ?? []);
+        if (res.has_more && res.next_cursor) {
+          cursor = res.next_cursor || undefined;
+          safety += 1;
+        } else {
+          break;
+        }
       }
+      this.total = items.length;
+      this.completed = items.filter(t => t.completed).length;
+      this.deleted = items.filter(t => !!t.deleted_at).length;
+      const now = new Date();
+      this.overdue = items.filter(t => !!t.due_at && new Date(t.due_at) < now && !t.completed && !t.deleted_at).length;
+    } catch (err) {
+      console.error('[Dashboard] Failed to load', err);
+      this.errorMessage = 'Failed to load dashboard';
+    } finally {
+      this.loading = false;
     }
-    this.total = items.length;
-    this.completed = items.filter(t => t.completed).length;
-    this.deleted = items.filter(t => !!t.deleted_at).length;
-    const now = new Date();
-    this.overdue = items.filter(t => !!t.due_at && new Date(t.due_at) < now && !t.completed && !t.deleted_at).length;
-    this.loading = false;
   }
 }
