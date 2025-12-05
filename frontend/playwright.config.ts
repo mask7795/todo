@@ -11,7 +11,7 @@ export default defineConfig({
     video: 'retain-on-failure',
   },
   webServer: {
-    command: 'ng serve --proxy-config proxy.conf.json',
+    command: 'npm run start:dev',
     url: 'http://localhost:4200',
     reuseExistingServer: true,
     stdout: 'pipe',

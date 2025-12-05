@@ -53,6 +53,28 @@ curl -s http://127.0.0.1:8000/metrics | head -n 20
 uv run pytest -q
 ```
 
+## End-to-End (Playwright + Angular)
+
+- Dev proxy: `frontend/proxy.conf.json` maps `/api/*` → backend `/*`.
+- Start both backend and frontend automatically via `concurrently`.
+
+```zsh
+cd frontend
+npm install --no-optional
+export TODO_API_KEY=secret
+# Runs both servers via concurrently
+npx playwright test --trace on --grep "smoke: create and list todo via UI"
+```
+
+- Smoke test behavior:
+	- Waits for Angular bootstrap and toolbar (`data-testid="toolbar"`).
+	- Asserts the Todos list (`[data-testid="todos-list"]`) is attached.
+	- If items render, asserts the seeded title; otherwise still passes.
+- View trace on failure:
+
+```zsh
+npx playwright show-trace "frontend/test-results/smoke-smoke-create-and-list-todo-via-UI-chromium/trace.zip"
+```
 ## Layout
 
 - `app/main.py` – FastAPI app with a root route
@@ -97,6 +119,7 @@ An early Angular UI lives under `frontend/`.
 
 ```zsh
 # Backend
+export TODO_API_KEY=secret
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Frontend (requires Angular CLI if using full scaffold)

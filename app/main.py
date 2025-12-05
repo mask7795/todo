@@ -34,8 +34,8 @@ app.include_router(metrics_router)
 
 
 @app.get("/", status_code=status.HTTP_200_OK)
-async def read_root() -> dict:
-    return {"message": "OK", "service": "todo", "version": "0.1.0"}
+async def root():
+    return {"message": "OK"}
 
 
 # Using lifespan above instead of deprecated on_event startup

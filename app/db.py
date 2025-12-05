@@ -5,9 +5,11 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import Session, SQLModel
 
-DB_PATH = Path(".data")
+# Use project-root-based .data directory to avoid CWD issues
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+DB_PATH = PROJECT_ROOT / ".data"
 DB_PATH.mkdir(exist_ok=True)
-DATABASE_URL = f"sqlite:///{DB_PATH / 'todo.db'}"
+DATABASE_URL = f"sqlite:///{(DB_PATH / 'todo.db').as_posix()}"
 
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

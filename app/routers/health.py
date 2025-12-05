@@ -12,7 +12,10 @@ def live() -> dict[str, str]:
 
 @router.get("/ready", status_code=status.HTTP_200_OK)
 def ready() -> dict[str, str]:
-    # Simple DB readiness check
-    with engine.connect() as conn:
-        conn.exec_driver_sql("SELECT 1")
-    return {"status": "ready"}
+    # DB readiness check; return not-ready on error instead of 500
+    try:
+        with engine.connect() as conn:
+            conn.exec_driver_sql("SELECT 1")
+        return {"status": "ready"}
+    except Exception:
+        return {"status": "not-ready"}
