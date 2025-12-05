@@ -70,19 +70,19 @@ jobs:
           # Wait for backend and frontend to be available
           for i in {1..90}; do
             if curl -fsS http://127.0.0.1:8000/health/live >/dev/null \
-              && curl -fsS http://localhost:4200 >/dev/null \
-              && curl -fsS http://localhost:4200/api/health/live >/dev/null; then
+              && curl -fsS http://127.0.0.1:4200 >/dev/null \
+              && curl -fsS http://127.0.0.1:4200/api/health/live >/dev/null; then
               echo "Servers are up"; break; fi
             echo "Waiting for servers ($i/90)..."; sleep 2;
           done
 
           echo '--- Curl diagnostics ---'
           curl -v http://127.0.0.1:8000/health/live || true
-          curl -v http://localhost:4200/ || true
-          curl -v http://localhost:4200/api/health/live || true
+          curl -v http://127.0.0.1:4200/ || true
+          curl -v http://127.0.0.1:4200/api/health/live || true
 
           # Sanity check todos GET via proxy (non-fatal)
-          curl -fsS http://localhost:4200/api/todos/ || true
+          curl -fsS http://127.0.0.1:4200/api/todos/ || true
 
           # Run tests
           set +e
