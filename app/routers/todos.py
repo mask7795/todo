@@ -17,8 +17,8 @@ router = APIRouter(prefix="/todos", tags=["todos"])
 @router.get("/", response_model=TodoList, status_code=status.HTTP_200_OK)
 def list_todos(
     session: Annotated[Session, Depends(get_session)],
-    limit: int = Query(50, ge=1, le=200, description="Max items per page (1-200)"),
-    offset: int = Query(0, ge=0, description="Items to skip (>=0)"),
+    limit: int = 50,
+    offset: int = 0,
     completed: bool | None = Query(None, description="Filter by completion status (true/false)"),
     priority: str | None = Query(None, description="Filter by priority: low|medium|high"),
     overdue: bool | None = Query(None, description="Filter overdue items (due_at < now)"),
@@ -28,12 +28,13 @@ def list_todos(
 ) -> TodoList:
     # Ensure latest schema (handles tests and dev hot-reload)
     ensure_schema()
-    if limit < 1:
-        limit = 1
+    # Explicit validation to provide clearer 400 errors instead of generic 422
+    if limit is None or limit < 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="limit must be >= 1")
     if limit > 200:
-        limit = 200
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="limit must be <= 200")
     if offset < 0:
-        offset = 0
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="offset must be >= 0")
     base_stmt = select(Todo)
     if not include_deleted:
         # SQLAlchemy column API; mypy sees field type, so ignore

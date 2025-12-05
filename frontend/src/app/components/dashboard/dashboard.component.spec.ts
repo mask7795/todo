@@ -47,4 +47,70 @@ describe('DashboardComponent', () => {
     expect(el.textContent).toContain('Deleted');
     expect(el.textContent).toContain('Overdue');
   });
+
+  it('requests include_deleted with limit 200', async () => {
+    let calledParams: any = null;
+    mockService = {
+      list: (params: any) => {
+        calledParams = params;
+        // Simulate single page (no pagination)
+        return of({ ...list, has_more: false, next_cursor: null });
+      },
+    } as unknown as TodosService;
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [CommonModule, DashboardComponent],
+      providers: [{ provide: TodosService, useValue: mockService }],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(DashboardComponent);
+    const comp = fixture.componentInstance;
+    await comp.ngOnInit();
+    expect(calledParams).toBeTruthy();
+    expect(calledParams.include_deleted).toBe(true);
+    expect(calledParams.limit).toBe(200);
+  });
+
+  it('paginates and aggregates across pages', async () => {
+    // Create two pages: first with has_more and next_cursor, second final
+    const page1: TodoList = {
+      items: sample.slice(0, 2),
+      total: 4,
+      has_more: true,
+      next_cursor: '2',
+    };
+    const page2: TodoList = {
+      items: sample.slice(2),
+      total: 4,
+      has_more: false,
+      next_cursor: null,
+    };
+
+    let calls: any[] = [];
+    mockService = {
+      list: (params: any) => {
+        calls.push(params);
+        if (!params.cursor) {
+          return of(page1);
+        }
+        return of(page2);
+      },
+    } as unknown as TodosService;
+
+    await TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [CommonModule, DashboardComponent],
+      providers: [{ provide: TodosService, useValue: mockService }],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(DashboardComponent);
+    const comp = fixture.componentInstance;
+    await comp.ngOnInit();
+    expect(comp.total).toBe(4);
+    expect(calls.length).toBeGreaterThan(1);
+    expect(calls[0].limit).toBe(200);
+    expect(calls[0].cursor).toBeUndefined();
+    expect(calls[1].cursor).toBe('2');
+  });
 });

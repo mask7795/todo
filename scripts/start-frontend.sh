@@ -22,6 +22,12 @@ if [ ! -d node_modules ]; then
   npm ci || npm install
 fi
 
+# On Linux runners, ensure Rollup platform binary is present (optional dep may be skipped)
+if [[ "$(uname -s)" == "Linux" ]]; then
+  echo "Ensuring Rollup Linux binary is installed (Linux host detected)"
+  npm ls @rollup/rollup-linux-x64-gnu >/dev/null 2>&1 || npm install @rollup/rollup-linux-x64-gnu --no-save || true
+fi
+
 # Start the server
 npx ng serve \
   --host 127.0.0.1 \

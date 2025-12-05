@@ -20,10 +20,22 @@ export class DashboardComponent {
   constructor(private todos: TodosService) {}
 
   async ngOnInit() {
-    const res: TodoList = await firstValueFrom(
-      this.todos.list({ include_deleted: true, limit: 200 })
-    );
-    const items: Todo[] = res.items ?? [];
+    let items: Todo[] = [];
+    let cursor: string | undefined = undefined;
+    let safety = 0;
+    // Paginate to aggregate beyond 200 safely
+    while (safety < 50) {
+      const res: TodoList = await firstValueFrom(
+        this.todos.list({ include_deleted: true, limit: 200, cursor })
+      );
+      items = items.concat(res.items ?? []);
+      if (res.has_more && res.next_cursor) {
+        cursor = res.next_cursor || undefined;
+        safety += 1;
+      } else {
+        break;
+      }
+    }
     this.total = items.length;
     this.completed = items.filter(t => t.completed).length;
     this.deleted = items.filter(t => !!t.deleted_at).length;

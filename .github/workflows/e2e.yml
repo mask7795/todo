@@ -30,6 +30,14 @@ jobs:
           npm ci
           npm cache verify
 
+      - name: Ensure Rollup Linux binary present
+        if: runner.os == 'Linux'
+        working-directory: frontend
+        run: |
+          set -euo pipefail
+          echo "Ensuring Rollup Linux binary is installed"
+          npm ls @rollup/rollup-linux-x64-gnu || npm install @rollup/rollup-linux-x64-gnu --no-save || true
+
       - name: Install Playwright Browsers
         working-directory: frontend
         run: npx playwright install --with-deps
