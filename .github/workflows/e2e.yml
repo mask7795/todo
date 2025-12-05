@@ -42,9 +42,23 @@ jobs:
           uv venv
           uv sync --all-groups
 
-      - name: Run Playwright tests (starts backend+frontend)
+      - name: Start servers and run Playwright tests
         working-directory: frontend
-        run: npx playwright test --reporter=dot
+        env:
+          CI_WEBSERVER: '0'
+        run: |
+          npx concurrently -k -n backend,frontend -c green.bold,blue.bold "../scripts/start-backend.sh" "npm run start:frontend" &
+          # Wait for backend and frontend to be available
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:8000/health/live >/dev/null && curl -fsS http://localhost:4200 >/dev/null; then
+              echo "Servers are up"; break; fi
+            echo "Waiting for servers ($i/60)..."; sleep 2;
+          done
+          npx playwright test --reporter=dot || EXIT=$?
+          # Cleanup servers
+          pkill -f "ng serve" || true
+          pkill -f "uvicorn app.main:app" || true
+          exit ${EXIT:-0}
 
       - name: Upload Playwright report
         if: always()

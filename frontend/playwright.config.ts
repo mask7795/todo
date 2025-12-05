@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const useWebServer = process.env.CI_WEBSERVER !== '0';
+
 export default defineConfig({
   testDir: './tests-e2e',
   timeout: 60_000,
@@ -10,14 +12,16 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  webServer: {
-    command: 'npm run start:dev',
-    url: 'http://localhost:4200',
-    reuseExistingServer: true,
-    stdout: 'pipe',
-    stderr: 'pipe',
-    timeout: 120_000,
-  },
+  webServer: useWebServer
+    ? {
+        command: 'npm run start:dev',
+        url: 'http://localhost:4200',
+        reuseExistingServer: true,
+        stdout: 'pipe',
+        stderr: 'pipe',
+        timeout: 120_000,
+      }
+    : undefined,
   projects: [
     {
       name: 'chromium',
