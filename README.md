@@ -172,6 +172,28 @@ Production guidance:
 uv run pytest -q --cov=app --cov-report=term
 ```
 
+### Testing Auth
+
+- CI does not set `TODO_API_KEY`; tests run with auth disabled by default.
+- Auth-specific tests enable auth via `monkeypatch.setenv("TODO_API_KEY", "secret")` and assert 401/OK paths.
+- Local runs: keep `TODO_API_KEY` unset to run the full suite without auth.
+- Run only auth tests:
+
+```zsh
+uv run pytest -q -k auth
+```
+
+- Manual auth check locally:
+
+```zsh
+export TODO_API_KEY=secret
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+curl -s -X POST http://127.0.0.1:8000/todos/ \
+	-H "Content-Type: application/json" \
+	-H "X-API-Key: secret" \
+	-d '{"title":"Buy milk"}'
+```
+
 ## Project Layout
 - `app/main.py`: FastAPI app and root route
  - `app/routers/todos.py`: `/todos` router (SQLModel + SQLite)
