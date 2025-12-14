@@ -74,7 +74,19 @@
 
 <ul class="todos" data-testid="todos-list">
   <li id="todo-{{t.id}}" *ngFor="let t of todos" data-testid="todo-item">
-    <span data-testid="todo-title" [class.completed]="t.completed" [class.deleted]="t.deleted_at" [class.overdue]="isOverdue(t)">{{ t.title }}</span>
+    <ng-container *ngIf="editingId === t.id; else viewTitle">
+      <div>
+        <input class="edit-input" [(ngModel)]="editingTitle" name="editTitle-{{t.id}}" [disabled]="editingLoading" />
+        <div class="edit-actions">
+          <button (click)="saveEdit(t)" [disabled]="editingLoading">Save</button>
+          <button (click)="cancelEdit()" [disabled]="editingLoading">Cancel</button>
+          <span *ngIf="editingError" style="color:#b00020;margin-left:8px;">{{ editingError }}</span>
+        </div>
+      </div>
+    </ng-container>
+    <ng-template #viewTitle>
+      <span data-testid="todo-title" [class.completed]="t.completed" [class.deleted]="t.deleted_at" [class.overdue]="isOverdue(t)">{{ t.title }}</span>
+    </ng-template>
     <span class="meta">
       <span *ngIf="t.priority">[{{ t.priority }}]</span>
       <span *ngIf="t.due_at">due {{ t.due_at | date: 'short' }}</span>
@@ -84,6 +96,7 @@
       <button data-testid="toggle-complete" (click)="toggleComplete(t)">{{ t.completed ? 'Mark Active' : 'Mark Done' }}</button>
       <button data-testid="delete" (click)="delete(t)">Delete</button>
       <button data-testid="restore" (click)="restore(t)" [disabled]="!t.deleted_at">Restore</button>
+      <button data-testid="edit" (click)="startEdit(t)" *ngIf="editingId !== t.id">Edit</button>
     </div>
   </li>
 </ul>

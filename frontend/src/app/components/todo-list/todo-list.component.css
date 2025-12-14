@@ -80,6 +80,20 @@
 .todos button:last-child {
 	margin-right: 0;
 }
+/* Edit input styling */
+.edit-input {
+	padding: 6px 10px;
+	border-radius: 4px;
+	border: 1px solid #bdbdbd;
+	min-width: 180px;
+	margin-right: 8px;
+}
+.edit-actions {
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	margin-top: 8px;
+}
 .pager {
 	margin-top: 2rem;
 	display: flex;

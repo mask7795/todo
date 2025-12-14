@@ -50,9 +50,11 @@ jobs:
         working-directory: frontend
         run: npx playwright install --with-deps
 
-      - name: Run quick-add e2e
+      - name: Run quick-add + edit e2e
         working-directory: frontend
-        run: npx playwright test tests-e2e/quick-add.spec.ts --project=chromium --reporter=dot
+        run: |
+          # Run the quick-add test and the new edit test together to validate create+edit flows
+          npx playwright test tests-e2e/quick-add.spec.ts tests-e2e/edit-todo.spec.ts --project=chromium --reporter=dot
 
       - name: Upload Playwright report
         if: failure()

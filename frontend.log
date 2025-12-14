@@ -1,14 +1,19 @@
+
+> todo-frontend@0.0.0 start
+> ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false
+
 ❯ Building...
 ✔ Building...
 Initial chunk files | Names         | Raw size
-main.js             | main          | 50.31 kB | 
+main.js             | main          | 58.67 kB | 
 styles.css          | styles        | 95 bytes | 
 
-                    | Initial total | 50.40 kB
+                    | Initial total | 58.76 kB
 
-Application bundle generation complete. [1.165 seconds] - 2025-12-14T04:41:20.787Z
+Application bundle generation complete. [1.230 seconds] - 2025-12-14T06:33:46.203Z
 
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
+1:33:46 AM [vite] (client) Re-optimizing dependencies because vite config has changed
   ➜  Local:   http://127.0.0.1:4200/
   ➜  press h + enter to show help

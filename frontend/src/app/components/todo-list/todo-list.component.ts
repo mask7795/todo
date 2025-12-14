@@ -174,4 +174,50 @@ export class TodoListComponent implements OnInit {
     const due = new Date(t.due_at).getTime();
     return Date.now() > due;
   }
+
+  // Edit state
+  editingId: number | null = null;
+  editingTitle = '';
+  editingLoading = false;
+  editingError: string | null = null;
+
+  startEdit(todo: Todo) {
+    this.editingId = todo.id;
+    this.editingTitle = todo.title;
+    this.editingError = null;
+    try { this.cdr.detectChanges(); } catch {}
+  }
+
+  cancelEdit() {
+    this.editingId = null;
+    this.editingTitle = '';
+    this.editingError = null;
+    try { this.cdr.detectChanges(); } catch {}
+  }
+
+  saveEdit(todo: Todo) {
+    if (!this.editingId) return;
+    const title = (this.editingTitle || '').trim();
+    if (!title) {
+      this.editingError = 'Title required';
+      return;
+    }
+    this.editingLoading = true;
+    this.editingError = null;
+    this.todosService.update(todo.id, { title }).subscribe({
+      next: (updated) => {
+        todo.title = updated.title;
+        this.showSnackbarMessage('Todo updated!');
+        this.editingId = null;
+        this.editingTitle = '';
+        this.editingLoading = false;
+        try { this.cdr.detectChanges(); } catch {}
+      },
+      error: (err) => {
+        this.editingError = err?.message || 'Failed to update todo';
+        this.editingLoading = false;
+        try { this.cdr.detectChanges(); } catch {}
+      },
+    });
+  }
 }
