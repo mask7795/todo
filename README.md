@@ -161,6 +161,28 @@ npm run e2e:local:sh
 ```zsh
 npx playwright show-trace test-results/**/trace.zip
 ```
+ 
+### Quick-add e2e test
+
+- Location: `frontend/tests-e2e/quick-add.spec.ts` — verifies the quick-add inline form, snackbar, and persistence (API-backed assertion).
+- Run locally (from repo root):
+
+```zsh
+# start backend + frontend (see "Local e2e" above) or use the helper script
+bash scripts/run-e2e-local.sh
+```
+
+- Or run only Playwright from the `frontend` folder after starting backend/frontend manually:
+
+```zsh
+cd frontend
+npx playwright test frontend/tests-e2e/quick-add.spec.ts --project=chromium --reporter=dot
+```
+
+Notes:
+- The test asserts persistence via the API (robust against pagination/order differences) and performs a best-effort UI-level check.
+- If you want deterministic UI assertions, consider updating the frontend to navigate to the page containing newly added items (optional enhancement).
+
 ## Layout
 
 - `app/main.py` – FastAPI app with a root route
