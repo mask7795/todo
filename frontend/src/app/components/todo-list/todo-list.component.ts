@@ -81,35 +81,38 @@ export class TodoListComponent implements OnInit {
     }
     this.quickAddLoading = true;
     try {
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (environment.apiKey) headers['X-API-Key'] = environment.apiKey;
-      const res = await fetch('/api/todos/', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ title: this.quickAddTitle.trim() }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      const created = await res.json();
-      this.quickAddTitle = '';
-
-      // Determine the page containing the created item and navigate there so the UI shows it.
-      // Use the service to fetch a larger window, find index, compute offset page, then fetch that page.
-      this.todosService.list({ limit: 50 }).subscribe({
-        next: (list) => {
-          const idx = (list.items || []).findIndex((it) => it.id === created.id);
-          if (idx >= 0) {
-            const page = Math.floor(idx / this.limit);
-            this.offset = page * this.limit;
-          } else {
-            this.offset = 0;
-          }
-          this.fetch();
-          this.showSnackbarMessage('Todo added!');
+      // Prefer the Angular service so interceptors, base URL and error handling are consistent.
+      this.todosService.create({ title: this.quickAddTitle.trim() }).subscribe({
+        next: (created) => {
+          this.quickAddTitle = '';
+          // Fetch a larger window to compute the index/page of the created item.
+          this.todosService.list({ limit: 50 }).subscribe({
+            next: (list) => {
+              const idx = (list.items || []).findIndex((it) => it.id === created.id);
+              if (idx >= 0) {
+                const page = Math.floor(idx / this.limit);
+                this.offset = page * this.limit;
+              } else {
+                this.offset = 0;
+              }
+              // Refresh current page and then attempt to scroll/highlight the created element.
+              this.fetch();
+              this.showSnackbarMessage('Todo added!');
+              setTimeout(() => {
+                try {
+                  const el = document.getElementById(`todo-${created.id}`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add('highlight');
+                    setTimeout(() => el.classList.remove('highlight'), 2500);
+                  }
+                } catch (e) {
+                  // ignore DOM errors
+                }
+              }, 400);
         },
-        error: () => {
-          // Fallback: refresh current page
-          this.fetch();
-          this.showSnackbarMessage('Todo added!');
+        error: (err) => {
+          this.quickAddError = err?.message || 'Failed to add todo';
         },
       });
     } catch (e: any) {

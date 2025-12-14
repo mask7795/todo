@@ -73,7 +73,7 @@
 </div>
 
 <ul class="todos" data-testid="todos-list">
-  <li *ngFor="let t of todos" data-testid="todo-item">
+  <li id="todo-{{t.id}}" *ngFor="let t of todos" data-testid="todo-item">
     <span data-testid="todo-title" [class.completed]="t.completed" [class.deleted]="t.deleted_at" [class.overdue]="isOverdue(t)">{{ t.title }}</span>
     <span class="meta">
       <span *ngIf="t.priority">[{{ t.priority }}]</span>
