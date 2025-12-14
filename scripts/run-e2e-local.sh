@@ -10,13 +10,23 @@ pushd "$ROOT_DIR" >/dev/null
 FE_HOST=127.0.0.1
 BE_HOST=127.0.0.1
 BE_PORT=8000
+LOG_DIR="$ROOT_DIR/frontend"
+mkdir -p "$LOG_DIR"
 
 print -- "[run-e2e-local] Root: $PWD"
 
 # Start backend
 print -- "[run-e2e-local] Starting backend on $BE_HOST:$BE_PORT"
 export TODO_API_KEY=${TODO_API_KEY:-secret}
-uv run uvicorn app.main:app --reload --host $BE_HOST --port $BE_PORT > frontend/backend.log 2>&1 & echo $! > frontend/backend.pid
+uv run uvicorn app.main:app --reload --host $BE_HOST --port $BE_PORT > "$LOG_DIR/backend.log" 2>&1 &
+BE_PID=$!
+sleep 1
+if kill -0 $BE_PID 2>/dev/null; then
+  echo $BE_PID > "$LOG_DIR/backend.pid"
+else
+  print -- "[run-e2e-local] Backend failed to start; showing log tail"
+  tail -n 120 "$LOG_DIR/backend.log" || true
+fi
 
 # Frontend setup
 print -- "[run-e2e-local] Frontend setup (nvm use + npm ci if needed)"
@@ -30,7 +40,22 @@ fi
 
 # Start frontend
 print -- "[run-e2e-local] Starting frontend on $FE_HOST:$FE_PORT"
-npx ng serve --host $FE_HOST --port $FE_PORT --proxy-config proxy.conf.json --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
+npx ng serve --host $FE_HOST --port $FE_PORT --proxy-config proxy.conf.json --verbose --hmr=false > "$LOG_DIR/frontend.log" 2>&1 &
+FE_PID=$!
+sleep 2
+if ! kill -0 $FE_PID 2>/dev/null; then
+  print -- "[run-e2e-local] Frontend exited early; retrying on port 4300"
+  FE_PORT=4300
+  npx ng serve --host $FE_HOST --port $FE_PORT --proxy-config proxy.conf.json --verbose --hmr=false > "$LOG_DIR/frontend.log" 2>&1 &
+  FE_PID=$!
+  sleep 2
+  if ! kill -0 $FE_PID 2>/dev/null; then
+    print -- "[run-e2e-local] Frontend failed to start; showing log tail and exiting"
+    tail -n 200 "$LOG_DIR/frontend.log" || true
+    exit 1
+  fi
+fi
+echo $FE_PID > "$LOG_DIR/frontend.pid"
 
 # Wait ready
 print -- "[run-e2e-local] Waiting for servers to be ready..."
@@ -48,8 +73,8 @@ for i in {1..90}; do
 done
 if [[ "$READY" != "1" ]]; then
   print -- "[run-e2e-local] Servers did not become ready in time"
-  tail -n 100 frontend/backend.log || true
-  tail -n 100 frontend/frontend.log || true
+  tail -n 100 "$LOG_DIR/backend.log" || true
+  tail -n 100 "$LOG_DIR/frontend.log" || true
   exit 1
 fi
 
@@ -67,16 +92,16 @@ set -e
 # Show logs if failing
 if [[ ${EXIT:-0} -ne 0 ]]; then
   print -- "[run-e2e-local] Tests failed; showing log tails"
-  print -- "--- backend.log (tail) ---"; tail -n 200 frontend/backend.log || true
-  print -- "--- frontend.log (tail) ---"; tail -n 200 frontend/frontend.log || true
+  print -- "--- backend.log (tail) ---"; tail -n 200 "$LOG_DIR/backend.log" || true
+  print -- "--- frontend.log (tail) ---"; tail -n 200 "$LOG_DIR/frontend.log" || true
   print -- "[run-e2e-local] Traces:"
   ls -1 test-results/**/*/trace.zip 2>/dev/null || true
 fi
 
 # Cleanup
 print -- "[run-e2e-local] Stopping servers"
-kill $(cat frontend/backend.pid) 2>/dev/null || true
-kill $(cat frontend/frontend.pid) 2>/dev/null || true
+[[ -f "$LOG_DIR/backend.pid" ]] && kill $(cat "$LOG_DIR/backend.pid") 2>/dev/null || true
+[[ -f "$LOG_DIR/frontend.pid" ]] && kill $(cat "$LOG_DIR/frontend.pid") 2>/dev/null || true
 
 popd >/dev/null
 print -- "[run-e2e-local] Done (exit ${EXIT:-0})"
