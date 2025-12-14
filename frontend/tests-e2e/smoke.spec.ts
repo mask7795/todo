@@ -55,7 +55,9 @@ test('smoke: create and list todo via UI', async ({ page, request }, testInfo) =
     // If items render, assert the seeded title; otherwise the smoke passes by list attachment
     const hasItems = (await page.locator('[data-testid="todo-item"]').count()) > 0;
     if (hasItems) {
-      await expect(page.locator('[data-testid="todo-item"] >> [data-testid="todo-title"]:has-text("Playwright e2e todo")')).toBeVisible({ timeout: 30000 });
+      const seeded = page.locator('[data-testid="todo-item"] >> [data-testid="todo-title"]:has-text("Playwright e2e todo")');
+      // Be resilient: if multiple seeded items exist, assert the first visible match
+      await expect(seeded.first()).toBeVisible({ timeout: 30000 });
     } else {
       await expect(list).toBeAttached();
     }
