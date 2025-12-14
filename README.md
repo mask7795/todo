@@ -134,6 +134,11 @@ npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbo
 bash scripts/start-frontend.sh
 # Or via npm alias from frontend folder
 npm run start:frontend:sh
+# Setup helper (uses .nvmrc + npm ci)
+# from repo root
+bash scripts/setup-frontend.sh
+# Or via npm alias from frontend folder
+npm run setup:frontend:sh
 ```
 
 Notes:
