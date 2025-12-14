@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodosService, Todo, TodoList } from '../../services/todos.service';
 import { firstValueFrom } from 'rxjs';
@@ -19,7 +19,7 @@ export class DashboardComponent {
   deleted = 0;
   overdue = 0;
 
-  constructor(private todos: TodosService) {}
+  constructor(private todos: TodosService, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
     console.log('[Dashboard] ngOnInit called');
@@ -64,6 +64,8 @@ export class DashboardComponent {
     } finally {
       this.loading = false;
       console.log('[Dashboard] Loading set to false');
+      // Ensure change detection runs in case async work occurred outside zone
+      try { this.cdr.detectChanges(); } catch {}
     }
   }
 }
