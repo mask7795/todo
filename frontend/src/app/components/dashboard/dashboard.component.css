@@ -1,6 +1,73 @@
-.dashboard { padding: 1rem; }
-.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-.card { background: #f6f8fa; border: 1px solid #e1e4e8; border-radius: 8px; padding: 1rem; text-align: center; }
-.label { font-size: 0.9rem; color: #57606a; }
-.value { font-size: 1.6rem; font-weight: 600; }
-.overdue { border-color: #ffb3b3; background: #fff5f5; }
+
+.dashboard {
+	padding: 1.5rem;
+	max-width: 700px;
+	margin: 0 auto;
+}
+.cards {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 1.2rem;
+}
+.card {
+	background: #f6f8fa;
+	border: 1px solid #e1e4e8;
+	border-radius: 12px;
+	padding: 1.2rem 0.8rem;
+	text-align: center;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+	transition: box-shadow 0.2s;
+}
+.card:hover {
+	box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.label {
+	font-size: 1rem;
+	color: #57606a;
+	margin-bottom: 0.5rem;
+}
+.value {
+	font-size: 2rem;
+	font-weight: 700;
+	color: #24292f;
+}
+.overdue {
+	border-color: #ffb3b3;
+	background: #fff5f5;
+}
+.status {
+	margin-top: 1.5rem;
+	text-align: left;
+	color: #57606a;
+}
+.error {
+	margin-top: 1.5rem;
+	color: #d32f2f;
+	background: #fff5f5;
+	border-radius: 6px;
+	padding: 0.75rem 1rem;
+	font-weight: 500;
+}
+@media (max-width: 900px) {
+	.cards {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+@media (max-width: 600px) {
+	.dashboard {
+		padding: 0.5rem;
+	}
+	.cards {
+		grid-template-columns: 1fr;
+		gap: 0.8rem;
+	}
+	.card {
+		padding: 1rem 0.5rem;
+	}
+	.label {
+		font-size: 0.95rem;
+	}
+	.value {
+		font-size: 1.5rem;
+	}
+}

@@ -1,10 +1,91 @@
-.toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 12px; }
-.error { color: #b00020; margin: 8px 0; }
-.todos { list-style: none; padding: 0; }
-.todos li { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #eee; }
-.todos li .completed { text-decoration: line-through; color: #666; }
-.todos li .deleted { opacity: 0.6; }
-.todos li .overdue { color: #b00020; }
-.meta { color: #555; font-size: 12px; margin-left: auto; }
-.badge { background: #eee; border-radius: 4px; padding: 2px 6px; margin-left: 8px; }
-.pager { margin-top: 12px; display: flex; gap: 8px; }
+
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	align-items: center;
+	margin-bottom: 1.5rem;
+}
+.error {
+	color: #d32f2f;
+	background: #fff5f5;
+	border-radius: 6px;
+	padding: 0.75rem 1rem;
+	font-weight: 500;
+	margin: 1rem 0;
+}
+.todos {
+	list-style: none;
+	padding: 0;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 1.2rem;
+}
+.todos li {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	background: #f6f8fa;
+	border: 1px solid #e1e4e8;
+	border-radius: 10px;
+	padding: 1rem 1.2rem;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+	transition: box-shadow 0.2s;
+}
+.todos li:hover {
+	box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+.todos li .completed {
+	text-decoration: line-through;
+	color: #666;
+}
+.todos li .deleted {
+	opacity: 0.6;
+}
+.todos li .overdue {
+	color: #d32f2f;
+}
+.meta {
+	color: #555;
+	font-size: 0.95rem;
+	margin-bottom: 0.5rem;
+}
+.badge {
+	background: #eee;
+	border-radius: 4px;
+	padding: 2px 6px;
+	margin-left: 8px;
+}
+.todos button {
+	margin-right: 0.5rem;
+	padding: 0.4rem 1rem;
+	border: none;
+	border-radius: 4px;
+	background: #1976d2;
+	color: #fff;
+	font-size: 0.95rem;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+.todos button:disabled {
+	background: #bdbdbd;
+	cursor: not-allowed;
+}
+.todos button:last-child {
+	margin-right: 0;
+}
+.pager {
+	margin-top: 2rem;
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+}
+@media (max-width: 700px) {
+	.todos {
+		grid-template-columns: 1fr;
+		gap: 0.8rem;
+	}
+	.toolbar {
+		gap: 0.5rem;
+	}
+}

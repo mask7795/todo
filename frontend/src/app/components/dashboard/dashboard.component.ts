@@ -22,16 +22,20 @@ export class DashboardComponent {
   constructor(private todos: TodosService) {}
 
   async ngOnInit() {
+    console.log('[Dashboard] ngOnInit called');
     try {
       let items: Todo[] = [];
       let cursor: string | undefined = undefined;
       let safety = 0;
       // Paginate to aggregate beyond 200 safely
       while (safety < 50) {
+        console.log(`[Dashboard] Fetching todos page ${safety + 1} with cursor`, cursor);
         const res: TodoList = await firstValueFrom(
           this.todos.list({ include_deleted: true, limit: 200, cursor })
         );
+        console.log('[Dashboard] API response:', res);
         if (!res || !Array.isArray(res.items)) {
+          console.error('[Dashboard] List response invalid', res);
           throw new Error('List response invalid');
         }
         this.lastStatus = `page=${safety + 1} count=${res.items?.length ?? 0} has_more=${!!res.has_more}`;
@@ -48,11 +52,18 @@ export class DashboardComponent {
       this.deleted = items.filter(t => !!t.deleted_at).length;
       const now = new Date();
       this.overdue = items.filter(t => !!t.due_at && new Date(t.due_at) < now && !t.completed && !t.deleted_at).length;
+      console.log('[Dashboard] Aggregation complete', {
+        total: this.total,
+        completed: this.completed,
+        deleted: this.deleted,
+        overdue: this.overdue
+      });
     } catch (err) {
       console.error('[Dashboard] Failed to load', err);
       this.errorMessage = 'Failed to load dashboard';
     } finally {
       this.loading = false;
+      console.log('[Dashboard] Loading set to false');
     }
   }
 }

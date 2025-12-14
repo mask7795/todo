@@ -1,10 +1,23 @@
 <div class="dashboard" *ngIf="!loading; else loadingTpl">
-  <h2>Dashboard</h2>
+  <div style="background: #ff0; color: #000; padding: 0.5rem; font-weight: bold; text-align: center;">[DEBUG] Dashboard Rendered</div>
+  <h2 style="margin-bottom:2rem;">Dashboard</h2>
   <div class="cards">
-    <div class="card"><div class="label">Total</div><div class="value">{{ total }}</div></div>
-    <div class="card"><div class="label">Completed</div><div class="value">{{ completed }}</div></div>
-    <div class="card"><div class="label">Deleted</div><div class="value">{{ deleted }}</div></div>
-    <div class="card overdue"><div class="label">Overdue</div><div class="value">{{ overdue }}</div></div>
+    <div class="card">
+      <div class="label">Total</div>
+      <div class="value">{{ total }}</div>
+    </div>
+    <div class="card">
+      <div class="label">Completed</div>
+      <div class="value">{{ completed }}</div>
+    </div>
+    <div class="card">
+      <div class="label">Deleted</div>
+      <div class="value">{{ deleted }}</div>
+    </div>
+    <div class="card overdue">
+      <div class="label">Overdue</div>
+      <div class="value">{{ overdue }}</div>
+    </div>
   </div>
   <div class="status" *ngIf="lastStatus">
     <small data-testid="dashboard-status">Last fetch: {{ lastStatus }}</small>
@@ -13,5 +26,13 @@
 </div>
 
 <ng-template #loadingTpl>
-  <p>Loading dashboard…</p>
-  </ng-template>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:1rem;">
+      <circle cx="20" cy="20" r="18" stroke="#e1e4e8" stroke-width="4"/>
+      <path d="M38 20c0-9.94-8.06-18-18-18" stroke="#1976d2" stroke-width="4" stroke-linecap="round">
+        <animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.8s" repeatCount="indefinite"/>
+      </path>
+    </svg>
+    <p>Loading dashboard…</p>
+  </div>
+</ng-template>

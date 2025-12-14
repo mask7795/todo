@@ -1,3 +1,4 @@
+
 <div class="toolbar">
   <label>
     Completed:
@@ -41,7 +42,15 @@
 </div>
 
 <div *ngIf="error" class="error">{{ error }}</div>
-<div *ngIf="loading">Loading...</div>
+<div *ngIf="loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;">
+  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:1rem;">
+    <circle cx="20" cy="20" r="18" stroke="#e1e4e8" stroke-width="4"/>
+    <path d="M38 20c0-9.94-8.06-18-18-18" stroke="#1976d2" stroke-width="4" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 20 20" to="360 20 20" dur="0.8s" repeatCount="indefinite"/>
+    </path>
+  </svg>
+  <p>Loading todos…</p>
+</div>
 
 <ul class="todos" data-testid="todos-list">
   <li *ngFor="let t of todos" data-testid="todo-item">
@@ -51,9 +60,11 @@
       <span *ngIf="t.due_at">due {{ t.due_at | date: 'short' }}</span>
       <span *ngIf="t.deleted_at" class="badge">deleted</span>
     </span>
-    <button data-testid="toggle-complete" (click)="toggleComplete(t)">{{ t.completed ? 'Mark Active' : 'Mark Done' }}</button>
-    <button data-testid="delete" (click)="delete(t)">Delete</button>
-    <button data-testid="restore" (click)="restore(t)" [disabled]="!t.deleted_at">Restore</button>
+    <div style="margin-top:0.5rem;">
+      <button data-testid="toggle-complete" (click)="toggleComplete(t)">{{ t.completed ? 'Mark Active' : 'Mark Done' }}</button>
+      <button data-testid="delete" (click)="delete(t)">Delete</button>
+      <button data-testid="restore" (click)="restore(t)" [disabled]="!t.deleted_at">Restore</button>
+    </div>
   </li>
 </ul>
 
