@@ -73,53 +73,57 @@ export class TodoListComponent implements OnInit {
     });
   }
 
-  async quickAdd() {
+  quickAdd() {
     this.quickAddError = null;
     if (!this.quickAddTitle.trim()) {
       this.quickAddError = 'Title required';
       return;
     }
     this.quickAddLoading = true;
-    try {
-      // Prefer the Angular service so interceptors, base URL and error handling are consistent.
-      this.todosService.create({ title: this.quickAddTitle.trim() }).subscribe({
-        next: (created) => {
-          this.quickAddTitle = '';
-          // Fetch a larger window to compute the index/page of the created item.
-          this.todosService.list({ limit: 50 }).subscribe({
-            next: (list) => {
-              const idx = (list.items || []).findIndex((it) => it.id === created.id);
-              if (idx >= 0) {
-                const page = Math.floor(idx / this.limit);
-                this.offset = page * this.limit;
-              } else {
-                this.offset = 0;
-              }
-              // Refresh current page and then attempt to scroll/highlight the created element.
-              this.fetch();
-              this.showSnackbarMessage('Todo added!');
-              setTimeout(() => {
-                try {
-                  const el = document.getElementById(`todo-${created.id}`);
-                  if (el) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('highlight');
-                    setTimeout(() => el.classList.remove('highlight'), 2500);
-                  }
-                } catch (e) {
-                  // ignore DOM errors
+
+    this.todosService.create({ title: this.quickAddTitle.trim() }).subscribe({
+      next: (created) => {
+        this.quickAddTitle = '';
+        // Fetch a larger window to compute the index/page of the created item.
+        this.todosService.list({ limit: 50 }).subscribe({
+          next: (list) => {
+            const idx = (list.items || []).findIndex((it) => it.id === created.id);
+            if (idx >= 0) {
+              const page = Math.floor(idx / this.limit);
+              this.offset = page * this.limit;
+            } else {
+              this.offset = 0;
+            }
+            // Refresh current page and then attempt to scroll/highlight the created element.
+            this.fetch();
+            this.showSnackbarMessage('Todo added!');
+            setTimeout(() => {
+              try {
+                const el = document.getElementById(`todo-${created.id}`);
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  el.classList.add('highlight');
+                  setTimeout(() => el.classList.remove('highlight'), 2500);
                 }
-              }, 400);
-        },
-        error: (err) => {
-          this.quickAddError = err?.message || 'Failed to add todo';
-        },
-      });
-    } catch (e: any) {
-      this.quickAddError = e?.message || 'Failed to add todo';
-    } finally {
-      this.quickAddLoading = false;
-    }
+              } catch (e) {
+                // ignore DOM errors
+              }
+            }, 400);
+            this.quickAddLoading = false;
+          },
+          error: () => {
+            // Fallback: refresh current page
+            this.fetch();
+            this.showSnackbarMessage('Todo added!');
+            this.quickAddLoading = false;
+          },
+        });
+      },
+      error: (err) => {
+        this.quickAddError = err?.message || 'Failed to add todo';
+        this.quickAddLoading = false;
+      },
+    });
   }
 
   showSnackbarMessage(msg: string) {
