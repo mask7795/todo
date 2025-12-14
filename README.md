@@ -225,6 +225,11 @@ npm run start:frontend:sh
 bash scripts/setup-frontend.sh
 # Or via npm alias from frontend folder
 npm run setup:frontend:sh
+# Optional: auto-install Node from .nvmrc via nvm
+# from repo root
+bash scripts/setup-frontend.sh --install-nvm
+# Or via npm alias from frontend folder
+npm run setup:frontend:nvm-install
 ```
 
 Notes:

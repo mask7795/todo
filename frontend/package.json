@@ -10,6 +10,7 @@
     "start:frontend:sh": "../scripts/start-frontend.sh",
     "e2e:local:sh": "../scripts/run-e2e-local.sh",
     "setup:frontend:sh": "../scripts/setup-frontend.sh",
+      "setup:frontend:nvm-install": "SETUP_NVM_INSTALL=1 bash ../scripts/setup-frontend.sh",
     "start:dev": "concurrently -k -n backend,frontend -c green.bold,blue.bold \"npm run start:backend\" \"npm run start:frontend\"",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
