@@ -24,11 +24,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'frontend/package-lock.json'
 
-      - name: Install npm dependencies (ci)
-        working-directory: frontend
+      - name: Frontend setup helper (nvm use + npm ci)
         run: |
-          npm ci
-          npm cache verify
+          bash scripts/setup-frontend.sh
 
       - name: Ensure Rollup Linux binary present
         if: runner.os == 'Linux'
@@ -69,16 +67,19 @@ jobs:
           set -euo pipefail
           echo "Node version: $(node --version)"
           echo "NPM version: $(npm --version)"
+          FE_PORT=4200
           # Start backend
           ../scripts/start-backend.sh > backend.log 2>&1 & echo $! > backend.pid
           # Start frontend via npx to avoid npm script resolution issues
-          npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
+          npm run start:frontend > frontend.log 2>&1 & echo $! > frontend.pid
           # Verify frontend is still running after short grace; retry once if exited
           sleep 3
           if ! kill -0 $(cat frontend.pid) 2>/dev/null; then
             echo "Frontend exited early; retrying start once..."
             echo '--- frontend.log (early exit) ---'; tail -n +1 frontend.log || true
-            npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false > frontend.log 2>&1 & echo $! > frontend.pid
+            # Try alternate port 4300 on retry
+            FE_PORT=4300
+            npm run start:frontend:4300 > frontend.log 2>&1 & echo $! > frontend.pid
           fi
 
           # Wait for backend and frontend to be available
@@ -86,8 +87,8 @@ jobs:
           for i in {1..90}; do
             BE_OK=0; FE_OK=0; PX_OK=0
             curl -fsS http://127.0.0.1:8000/health/live >/dev/null && BE_OK=1 || true
-            curl -fsS http://127.0.0.1:4200/ >/dev/null && FE_OK=1 || true
-            curl -fsS http://127.0.0.1:4200/api/health/live >/dev/null && PX_OK=1 || true
+            curl -fsS http://127.0.0.1:${FE_PORT}/ >/dev/null && FE_OK=1 || true
+            curl -fsS http://127.0.0.1:${FE_PORT}/api/health/live >/dev/null && PX_OK=1 || true
             if [[ "$BE_OK" == "1" && "$FE_OK" == "1" && "$PX_OK" == "1" ]]; then
               echo "Servers are up"; READY=1; break;
             fi
@@ -103,11 +104,11 @@ jobs:
 
           echo '--- Curl diagnostics ---'
           curl -v http://127.0.0.1:8000/health/live || true
-          curl -v http://127.0.0.1:4200/ || true
-          curl -v http://127.0.0.1:4200/api/health/live || true
+          curl -v http://127.0.0.1:${FE_PORT}/ || true
+          curl -v http://127.0.0.1:${FE_PORT}/api/health/live || true
 
           # Sanity check todos GET via proxy (non-fatal)
-          curl -fsS http://127.0.0.1:4200/api/todos/ || true
+          curl -fsS http://127.0.0.1:${FE_PORT}/api/todos/ || true
 
           # Run tests
           set +e
