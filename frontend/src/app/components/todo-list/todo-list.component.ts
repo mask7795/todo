@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TodosService, Todo, TodoList } from '../../services/todos.service';
@@ -28,7 +28,7 @@ export class TodoListComponent implements OnInit {
   nextCursor: string | null = null;
   hasMore: boolean | null = null;
 
-  constructor(private todosService: TodosService) {}
+  constructor(private todosService: TodosService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.fetch();
@@ -53,10 +53,12 @@ export class TodoListComponent implements OnInit {
         this.nextCursor = list.next_cursor ?? null;
         this.hasMore = list.has_more ?? null;
         this.loading = false;
+        try { this.cdr.detectChanges(); } catch {}
       },
       error: (err) => {
         this.error = err.message || 'Failed to load todos';
         this.loading = false;
+        try { this.cdr.detectChanges(); } catch {}
       },
     });
   }
