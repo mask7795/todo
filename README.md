@@ -145,6 +145,10 @@ Notes:
 	- `curl -v http://127.0.0.1:4200/api/health/live`
 	- `tail -n +1 frontend/frontend.log`
 
+ Default route:
+ - Visiting `/` in the frontend redirects to `/dashboard` and renders the dashboard on first load.
+ - Todos page is available at `/todos`.
+
 Auth tip:
 - To enable authenticated write calls from the UI, set `environment.apiKey` (or export `TODO_API_KEY=secret` for the backend and configure the frontend env accordingly). The interceptor will add `X-API-Key` automatically for requests.
 
