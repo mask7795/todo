@@ -3,6 +3,10 @@
 [![CI](https://github.com/mask7795/todo/actions/workflows/ci.yml/badge.svg)](https://github.com/mask7795/todo/actions/workflows/ci.yml)
 [![e2e](https://github.com/mask7795/todo/actions/workflows/e2e.yml/badge.svg)](https://github.com/mask7795/todo/actions/workflows/e2e.yml)
 
+View recent runs:
+- CI: https://github.com/mask7795/todo/actions/workflows/ci.yml?query=branch%3Amain
+- e2e: https://github.com/mask7795/todo/actions/workflows/e2e.yml?query=branch%3Amain
+
 Minimal FastAPI app scaffold with uv-based environment and a smoke test.
 
 ## Quick Start
