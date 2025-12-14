@@ -149,6 +149,37 @@ Notes:
  - Visiting `/` in the frontend redirects to `/dashboard` and renders the dashboard on first load.
  - Todos page is available at `/todos`.
 
+### Troubleshooting (Frontend)
+
+- Angular workspace: If you see "This command is not available when running the Angular CLI outside a workspace.", run the dev server from the `frontend` folder.
+
+```zsh
+cd frontend
+npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json
+```
+
+- Port conflict: If `4200` is busy, choose another port (e.g., `4300`).
+
+```zsh
+cd frontend
+npx ng serve --host 127.0.0.1 --port 4300 --proxy-config proxy.conf.json
+```
+
+- Backend unavailable: If the UI logs `connect ECONNREFUSED 127.0.0.1:8000`, start the FastAPI server.
+
+```zsh
+export TODO_API_KEY=secret # optional for write routes
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+- Proxy smoke check: The dev proxy maps `/api/*` → backend. Verify health via the dev server:
+
+```zsh
+curl -v http://127.0.0.1:4200/api/health/live
+```
+
+- Dashboard first-load: Router uses blocking initial navigation so `/` renders `/dashboard` on first load.
+
 Auth tip:
 - To enable authenticated write calls from the UI, set `environment.apiKey` (or export `TODO_API_KEY=secret` for the backend and configure the frontend env accordingly). The interceptor will add `X-API-Key` automatically for requests.
 
