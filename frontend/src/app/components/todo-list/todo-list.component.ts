@@ -89,9 +89,29 @@ export class TodoListComponent implements OnInit {
         body: JSON.stringify({ title: this.quickAddTitle.trim() }),
       });
       if (!res.ok) throw new Error(await res.text());
+      const created = await res.json();
       this.quickAddTitle = '';
-      this.fetch();
-      this.showSnackbarMessage('Todo added!');
+
+      // Determine the page containing the created item and navigate there so the UI shows it.
+      // Use the service to fetch a larger window, find index, compute offset page, then fetch that page.
+      this.todosService.list({ limit: 50 }).subscribe({
+        next: (list) => {
+          const idx = (list.items || []).findIndex((it) => it.id === created.id);
+          if (idx >= 0) {
+            const page = Math.floor(idx / this.limit);
+            this.offset = page * this.limit;
+          } else {
+            this.offset = 0;
+          }
+          this.fetch();
+          this.showSnackbarMessage('Todo added!');
+        },
+        error: () => {
+          // Fallback: refresh current page
+          this.fetch();
+          this.showSnackbarMessage('Todo added!');
+        },
+      });
     } catch (e: any) {
       this.quickAddError = e?.message || 'Failed to add todo';
     } finally {
