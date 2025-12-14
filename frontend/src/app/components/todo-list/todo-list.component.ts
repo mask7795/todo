@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TodosService, Todo, TodoList } from '../../services/todos.service';
 
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-todo-list',
   templateUrl: './todo-list.component.html',
@@ -14,6 +16,11 @@ export class TodoListComponent implements OnInit {
   todos: Todo[] = [];
   loading = false;
   error: string | null = null;
+
+  // Quick add
+  quickAddTitle = '';
+  quickAddLoading = false;
+  quickAddError: string | null = null;
 
   // filters
   showCompleted: boolean | undefined = undefined;
@@ -61,6 +68,31 @@ export class TodoListComponent implements OnInit {
         try { this.cdr.detectChanges(); } catch {}
       },
     });
+  }
+
+  async quickAdd() {
+    this.quickAddError = null;
+    if (!this.quickAddTitle.trim()) {
+      this.quickAddError = 'Title required';
+      return;
+    }
+    this.quickAddLoading = true;
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (environment.apiKey) headers['X-API-Key'] = environment.apiKey;
+      const res = await fetch('/api/todos/', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ title: this.quickAddTitle.trim() }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      this.quickAddTitle = '';
+      this.fetch();
+    } catch (e: any) {
+      this.quickAddError = e?.message || 'Failed to add todo';
+    } finally {
+      this.quickAddLoading = false;
+    }
   }
 
   toggleComplete(todo: Todo) {
