@@ -1,6 +1,6 @@
 
 <div class="toolbar">
-  <a routerLink="/todos/create" style="margin-right: 18px; font-weight: 500; text-decoration: none; background: #1976d2; color: #fff; padding: 6px 14px; border-radius: 4px;">+ Add Todo</a>
+  <a routerLink="/todos/create" role="link" style="margin-right: 18px; font-weight: 500; text-decoration: none; background: #1976d2; color: #fff; padding: 6px 14px; border-radius: 4px;">+ Add Todo</a>
   <label>
     Completed:
     <select [(ngModel)]="showCompleted" (change)="fetch()">

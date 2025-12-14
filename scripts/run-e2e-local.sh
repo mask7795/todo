@@ -2,6 +2,20 @@
 # Local E2E runner: starts backend + frontend, waits ready, runs Playwright, shows trace on failure.
 set -euo pipefail
 
+
+# Kill any running backend/frontend on default ports (8000, 4200, 4300)
+echo "[run-e2e-local] Checking for existing backend/frontend processes..."
+
+
+for port in 8000 4200 4300; do
+  lsof -ti tcp:$port | while read PID; do
+    if [ -n "$PID" ]; then
+      echo "[run-e2e-local] Killing process on port $port (PID $PID)"
+      kill $PID 2>/dev/null || true
+    fi
+  done
+done
+
 ROOT_DIR=${0:a:h}/..
 pushd "$ROOT_DIR" >/dev/null
 

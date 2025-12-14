@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -39,9 +40,13 @@ export class CreateTodoComponent {
         due_date: this.form.value.due_date || undefined,
       };
 
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (environment.apiKey) {
+        headers['X-API-Key'] = environment.apiKey;
+      }
       const res = await fetch('/api/todos/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify(body),
       });
       if (!res.ok) {
