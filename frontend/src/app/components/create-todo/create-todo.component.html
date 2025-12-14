@@ -1,0 +1,39 @@
+<div class="container" style="max-width: 640px; margin: 24px auto; padding: 16px;">
+  <h2>Create Todo</h2>
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div style="margin-bottom: 12px;">
+      <label for="title">Title *</label>
+      <input id="title" type="text" formControlName="title" style="width: 100%; padding: 8px;" />
+    </div>
+
+    <div style="margin-bottom: 12px;">
+      <label for="description">Description</label>
+      <textarea id="description" formControlName="description" rows="3" style="width: 100%; padding: 8px;"></textarea>
+    </div>
+
+    <div style="margin-bottom: 12px; display: flex; gap: 12px;">
+      <div style="flex: 1;">
+        <label for="priority">Priority</label>
+        <select id="priority" formControlName="priority" style="width: 100%; padding: 8px;">
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+      <div style="flex: 1;">
+        <label for="due_date">Due Date</label>
+        <input id="due_date" type="date" formControlName="due_date" style="width: 100%; padding: 8px;" />
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <button type="submit" [disabled]="loading || form.invalid" style="padding: 8px 12px;">
+        {{ loading ? 'Creating...' : 'Create' }}
+      </button>
+      <a routerLink="/todos">Cancel</a>
+    </div>
+  </form>
+
+  <p *ngIf="error" style="color: #b00020; margin-top: 12px;">{{ error }}</p>
+</div>
