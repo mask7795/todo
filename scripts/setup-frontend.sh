@@ -14,7 +14,9 @@ if command -v nvm >/dev/null 2>&1; then
 else
   if [ -s "$HOME/.nvm/nvm.sh" ]; then
     echo "[setup-frontend] Sourcing nvm from ~/.nvm/nvm.sh"
-    . "$HOME/.nvm/nvm.sh" || true
+    set +e
+    . "$HOME/.nvm/nvm.sh"
+    set -e
     nvm use || true
   else
     echo "[setup-frontend] nvm not found; ensure Node version matches .nvmrc"
