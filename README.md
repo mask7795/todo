@@ -188,6 +188,15 @@ curl -v http://127.0.0.1:4200/api/health/live
 - Ensure the backend is started before the UI and reachable at `http://127.0.0.1:8000`.
 - Prefer deterministic ports (`--host 127.0.0.1 --port 4200`) and fall back to `4300` if conflicted.
 
+Node version:
+- The frontend includes an `.nvmrc` with Node 20. Use `nvm` to align your local environment before installing deps.
+
+```zsh
+cd frontend
+nvm use
+npm ci
+```
+
 Auth tip:
 - To enable authenticated write calls from the UI, set `environment.apiKey` (or export `TODO_API_KEY=secret` for the backend and configure the frontend env accordingly). The interceptor will add `X-API-Key` automatically for requests.
 
