@@ -1,6 +1,3 @@
-  // Snackbar state
-  showSnackbar: boolean = false;
-  snackbarMessage: string = '';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,6 +21,9 @@ export class TodoListComponent implements OnInit {
   quickAddTitle = '';
   quickAddLoading = false;
   quickAddError: string | null = null;
+  // Snackbar state
+  showSnackbar: boolean = false;
+  snackbarMessage: string = '';
 
   // filters
   showCompleted: boolean | undefined = undefined;
