@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false",
     "start:backend": "../scripts/start-backend.sh",
-    "start:frontend": "ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json",
+    "start:frontend": "ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false",
+    "start:frontend:4300": "ng serve --host 127.0.0.1 --port 4300 --proxy-config proxy.conf.json --verbose --hmr=false",
     "start:frontend:sh": "../scripts/start-frontend.sh",
     "start:dev": "concurrently -k -n backend,frontend -c green.bold,blue.bold \"npm run start:backend\" \"npm run start:frontend\"",
     "build": "ng build",
@@ -27,8 +28,8 @@
   "private": true,
   "packageManager": "npm@10.9.2",
   "engines": {
-    "node": "20.x",
-    "npm": ">=10"
+    "node": ">=20 <21",
+    "npm": ">=10 <11"
   },
   "dependencies": {
     "@angular/common": "21.0.3",
