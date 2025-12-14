@@ -19,26 +19,21 @@ test('quick add creates todo and shows snackbar', async ({ page }) => {
   const found = (body.items || []).some((it: any) => it.title === title);
   expect(found).toBeTruthy();
 
-  // UI-level check: try to locate the created item in the visible list, paging forward if needed.
-  let uiFound = false;
-  for (let i = 0; i < 6; i++) {
-    try {
-      const loc = page.getByText(title).first();
-      if (await loc.isVisible()) { uiFound = true; break; }
-    } catch (e) {
-      // ignore not-found and try paging
-    }
+  // UI-level check: calculate which page the item appears on from the API, then navigate there.
+  const items = body.items || [];
+  const idx = items.findIndex((it: any) => it.title === title);
+  expect(idx).toBeGreaterThanOrEqual(0);
+  const pageSize = 10; // matches component default
+  const targetPage = Math.floor(idx / pageSize);
+
+  // Ensure we're on the first page, then click 'Next' targetPage times.
+  for (let i = 0; i < targetPage; i++) {
     const nextBtn = page.getByRole('button', { name: 'Next' });
-    try {
-      if (await nextBtn.isEnabled()) {
-        await nextBtn.click();
-        await page.waitForTimeout(300);
-        continue;
-      }
-    } catch (e) {
-      // no next button or not enabled
-    }
-    break;
+    await expect(nextBtn).toBeEnabled({ timeout: 2000 });
+    await nextBtn.click();
+    await page.waitForTimeout(300);
   }
-  expect(uiFound).toBeTruthy();
+
+  // Now assert the item is visible in the current page
+  await expect(page.getByText(title).first()).toBeVisible({ timeout: 3000 });
 });
