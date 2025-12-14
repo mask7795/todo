@@ -21,6 +21,17 @@ npx playwright show-trace test-results/**/trace.zip
 
 - If the frontend port 4200 conflicts in CI, the workflow auto-retries on 4300; check curl diagnostics in the job logs.
 
+### Common e2e Failures
+
+- Proxy mismatch: dev proxy expects calls to `/api/*`; ensure UI uses `/api/...` and `frontend/proxy.conf.json` points to backend.
+- Backend not started or unavailable: verify `http://127.0.0.1:8000/health/live` and check `backend.log` tail.
+- Auth key missing: when `TODO_API_KEY` is set in CI, write routes require `X-API-Key`; confirm interceptor sends it.
+- Port conflicts: `4200` busy → workflow retries `4300`; confirm `FE_PORT` in logs and curl diagnostics.
+- Angular workspace error: run `ng serve` from `frontend`, not repo root.
+- Playwright browsers not installed: step installs via `npx playwright install --with-deps`; re-run if missing.
+- Node version mismatch: use `.nvmrc` (`nvm use`) and `npm ci` for reproducible installs.
+- HMR flakiness: `--hmr=false` is used in CI; prefer verbose logs for routing/proxy.
+
 Minimal FastAPI app scaffold with uv-based environment and a smoke test.
 
 ## Quick Start
