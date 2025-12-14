@@ -109,7 +109,13 @@ if [[ ${EXIT:-0} -ne 0 ]]; then
   print -- "--- backend.log (tail) ---"; tail -n 200 "$LOG_DIR/backend.log" || true
   print -- "--- frontend.log (tail) ---"; tail -n 200 "$LOG_DIR/frontend.log" || true
   print -- "[run-e2e-local] Traces:"
-  ls -1 test-results/**/*/trace.zip 2>/dev/null || true
+  # Safely list trace files without causing a zsh "no matches found" error when glob is empty.
+  files=(test-results/**/*/trace.zip)
+  if (( ${#files[@]} > 0 )); then
+    ls -1 "${files[@]}" 2>/dev/null || true
+  else
+    print -- "[run-e2e-local] No trace.zip files found"
+  fi
 fi
 
 # Cleanup
