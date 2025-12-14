@@ -1,3 +1,6 @@
+  // Snackbar state
+  showSnackbar = false;
+  snackbarMessage = '';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -88,11 +91,20 @@ export class TodoListComponent implements OnInit {
       if (!res.ok) throw new Error(await res.text());
       this.quickAddTitle = '';
       this.fetch();
+      this.showSnackbarMessage('Todo added!');
     } catch (e: any) {
       this.quickAddError = e?.message || 'Failed to add todo';
     } finally {
       this.quickAddLoading = false;
     }
+  }
+
+  showSnackbarMessage(msg: string) {
+    this.snackbarMessage = msg;
+    this.showSnackbar = true;
+    setTimeout(() => {
+      this.showSnackbar = false;
+    }, 2200);
   }
 
   toggleComplete(todo: Todo) {
