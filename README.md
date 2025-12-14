@@ -180,6 +180,14 @@ curl -v http://127.0.0.1:4200/api/health/live
 
 - Dashboard first-load: Router uses blocking initial navigation so `/` renders `/dashboard` on first load.
 
+### CI Tips (Frontend)
+
+- Pin Node and npm versions in `frontend/package.json` `engines` and use `npm ci` in CI for reproducible installs.
+- Disable HMR (`--hmr=false`) to avoid flakiness in headless runs.
+- Use `--verbose` on `ng serve` to surface routing and proxy logs.
+- Ensure the backend is started before the UI and reachable at `http://127.0.0.1:8000`.
+- Prefer deterministic ports (`--host 127.0.0.1 --port 4200`) and fall back to `4300` if conflicted.
+
 Auth tip:
 - To enable authenticated write calls from the UI, set `environment.apiKey` (or export `TODO_API_KEY=secret` for the backend and configure the frontend env accordingly). The interceptor will add `X-API-Key` automatically for requests.
 
