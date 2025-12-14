@@ -7,6 +7,12 @@ View recent runs:
 - CI: https://github.com/mask7795/todo/actions/workflows/ci.yml?query=branch%3Amain
 - e2e: https://github.com/mask7795/todo/actions/workflows/e2e.yml?query=branch%3Amain
 
+### Latest e2e Status
+
+- The e2e badge reflects the latest workflow state on `main`.
+- Click the e2e badge to open the workflow; select the most recent run to view logs and artifacts.
+- If a run failed, use "Re-run failed jobs" after addressing the cause.
+
 ### Re-run Failed e2e
 
 - From the e2e workflow page, click the latest failed run and choose "Re-run jobs" → "Re-run failed jobs".
@@ -106,6 +112,41 @@ npx playwright test --trace on --grep "smoke: create and list todo via UI"
 
 ```zsh
 npx playwright show-trace "frontend/test-results/smoke-smoke-create-and-list-todo-via-UI-chromium/trace.zip"
+```
+
+### Local e2e
+
+- Install browsers once:
+
+```zsh
+cd frontend
+npx playwright install --with-deps
+```
+
+- Start backend and frontend in two terminals (or use the `start:dev` script):
+
+```zsh
+# Terminal A (repo root)
+export TODO_API_KEY=secret
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
+# Terminal B (frontend)
+cd frontend
+npm ci
+npx ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false
+```
+
+- Run tests:
+
+```zsh
+cd frontend
+npx playwright test --reporter=dot
+```
+
+- On failure, open the trace viewer:
+
+```zsh
+npx playwright show-trace test-results/**/trace.zip
 ```
 ## Layout
 
