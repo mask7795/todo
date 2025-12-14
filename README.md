@@ -143,6 +143,19 @@ cd frontend
 npx playwright test --reporter=dot
 ```
 
+- Or use the helper script from repo root:
+
+```zsh
+bash scripts/run-e2e-local.sh
+```
+
+- Or via npm alias from `frontend`:
+
+```zsh
+cd frontend
+npm run e2e:local:sh
+```
+
 - On failure, open the trace viewer:
 
 ```zsh

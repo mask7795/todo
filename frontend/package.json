@@ -8,6 +8,7 @@
     "start:frontend": "ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false",
     "start:frontend:4300": "ng serve --host 127.0.0.1 --port 4300 --proxy-config proxy.conf.json --verbose --hmr=false",
     "start:frontend:sh": "../scripts/start-frontend.sh",
+    "e2e:local:sh": "../scripts/run-e2e-local.sh",
     "setup:frontend:sh": "../scripts/setup-frontend.sh",
     "start:dev": "concurrently -k -n backend,frontend -c green.bold,blue.bold \"npm run start:backend\" \"npm run start:frontend\"",
     "build": "ng build",
