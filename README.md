@@ -7,6 +7,20 @@ View recent runs:
 - CI: https://github.com/mask7795/todo/actions/workflows/ci.yml?query=branch%3Amain
 - e2e: https://github.com/mask7795/todo/actions/workflows/e2e.yml?query=branch%3Amain
 
+### Re-run Failed e2e
+
+- From the e2e workflow page, click the latest failed run and choose "Re-run jobs" → "Re-run failed jobs".
+- Open the "Artifacts" section and download `server-logs` and Playwright `playwright-test-results` or `playwright-report`.
+- Inspect `frontend.log` and `backend.log` for startup issues (ports, proxy, backend availability).
+- For Playwright traces, use the Action's report or run locally:
+
+```zsh
+cd frontend
+npx playwright show-trace test-results/**/trace.zip
+```
+
+- If the frontend port 4200 conflicts in CI, the workflow auto-retries on 4300; check curl diagnostics in the job logs.
+
 Minimal FastAPI app scaffold with uv-based environment and a smoke test.
 
 ## Quick Start
