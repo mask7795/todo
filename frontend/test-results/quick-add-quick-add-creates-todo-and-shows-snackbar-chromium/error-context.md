@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Dashboard" [ref=e4] [cursor=pointer]:
+      - /url: /dashboard
+    - link "Todos" [ref=e5] [cursor=pointer]:
+      - /url: /todos
+  - main [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - textbox "Quick add todo..." [disabled] [ref=e10]: e2e-quick-add-1765772658567
+          - button "Add" [disabled] [ref=e11]
+          - generic [ref=e12]: Adding…
+        - generic [ref=e13]:
+          - text: "Completed:"
+          - combobox "Completed:" [ref=e14]:
+            - option "All" [selected]
+            - option "Only Completed"
+            - option "Only Active"
+        - generic [ref=e15]:
+          - text: "Priority:"
+          - combobox "Priority:" [ref=e16]:
+            - option "All" [selected]
+            - option "Low"
+            - option "Medium"
+            - option "High"
+        - generic [ref=e17]:
+          - text: "Overdue:"
+          - combobox "Overdue:" [ref=e18]:
+            - option "All" [selected]
+            - option "Overdue"
+            - option "Not Overdue"
+        - generic [ref=e19]:
+          - text: "Include Deleted:"
+          - combobox "Include Deleted:" [ref=e20]:
+            - option "No" [selected]
+            - option "Yes"
+        - generic [ref=e21]:
+          - text: "Sort by Due:"
+          - combobox "Sort by Due:" [ref=e22]:
+            - option "Default" [selected]
+            - option "Yes"
+      - generic [ref=e23]: "Http failure response for http://localhost:4200/api/todos/?limit=10&offset=0: 502 Bad Gateway"
+      - list
+      - generic [ref=e24]:
+        - button "Prev" [disabled] [ref=e25]
+        - button "Next" [disabled] [ref=e26]
+```
