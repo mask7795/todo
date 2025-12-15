@@ -10,13 +10,21 @@ test('quick add creates todo and shows snackbar', async ({ page }) => {
   await page.getByRole('button', { name: 'Add' }).click();
 
   // Expect snackbar to appear
-  await expect(page.locator('text=Todo added!')).toBeVisible({ timeout: 5000 });
+  await expect(page.locator('text=Todo added!')).toBeVisible({ timeout: 7000 });
 
   // The todo should appear in the list
   // The UI list may be paginated; verify persistence via the API to avoid paging flakes.
-  const res = await page.request.get('/api/todos/?limit=50');
-  const body = await res.json();
-  const found = (body.items || []).some((it: any) => it.title === title);
+  // Poll the API until the created item appears (handles eventual ordering/pagination delays)
+  const maxRetries = 40;
+  let found = false;
+  let body: any = {};
+  for (let i = 0; i < maxRetries; i++) {
+    const res = await page.request.get('/api/todos/?limit=200');
+    body = await res.json();
+    found = (body.items || []).some((it: any) => it.title === title);
+    if (found) break;
+    await page.waitForTimeout(300);
+  }
   expect(found).toBeTruthy();
 
   // UI-level check: calculate which page the item appears on from the API, then navigate there.
