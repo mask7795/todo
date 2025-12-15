@@ -25,6 +25,10 @@ frontend/*.pid
 frontend/*.log
 frontend/*.log
 
+# Playwright / test artifacts
+frontend/test-results/
+**/test-results/
+
 .DS_Store
 DS_Store
 .env
