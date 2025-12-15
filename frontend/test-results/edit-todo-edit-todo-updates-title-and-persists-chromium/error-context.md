@@ -1,0 +1,88 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - navigation [ref=e3]:
+    - link "Dashboard" [ref=e4] [cursor=pointer]:
+      - /url: /dashboard
+    - link "Todos" [ref=e5] [cursor=pointer]:
+      - /url: /todos
+  - main [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]: Todo added!
+      - generic [ref=e9]:
+        - generic [ref=e10]:
+          - textbox "Quick add todo..." [ref=e11]
+          - button "Add" [disabled] [ref=e12]
+        - generic [ref=e13]:
+          - text: "Completed:"
+          - combobox "Completed:" [ref=e14]:
+            - option "All" [selected]
+            - option "Only Completed"
+            - option "Only Active"
+        - generic [ref=e15]:
+          - text: "Priority:"
+          - combobox "Priority:" [ref=e16]:
+            - option "All" [selected]
+            - option "Low"
+            - option "Medium"
+            - option "High"
+        - generic [ref=e17]:
+          - text: "Overdue:"
+          - combobox "Overdue:" [ref=e18]:
+            - option "All" [selected]
+            - option "Overdue"
+            - option "Not Overdue"
+        - generic [ref=e19]:
+          - text: "Include Deleted:"
+          - combobox "Include Deleted:" [ref=e20]:
+            - option "No" [selected]
+            - option "Yes"
+        - generic [ref=e21]:
+          - text: "Sort by Due:"
+          - combobox "Sort by Due:" [ref=e22]:
+            - option "Default" [selected]
+            - option "Yes"
+      - list [ref=e23]:
+        - listitem [ref=e24]:
+          - generic [ref=e25]: e2e-edit-old-1765767676049
+          - generic [ref=e26]:
+            - button "Mark Done" [ref=e27] [cursor=pointer]
+            - button "Delete" [ref=e28] [cursor=pointer]
+            - button "Restore" [disabled] [ref=e29]
+            - button "Edit" [ref=e30] [cursor=pointer]
+        - listitem [ref=e31]:
+          - generic [ref=e32]: e2e-edit-old-1765767818934
+          - generic [ref=e33]:
+            - button "Mark Done" [ref=e34] [cursor=pointer]
+            - button "Delete" [ref=e35] [cursor=pointer]
+            - button "Restore" [disabled] [ref=e36]
+            - button "Edit" [ref=e37] [cursor=pointer]
+        - listitem [ref=e38]:
+          - generic [ref=e39]: e2e-edit-old-1765768000315
+          - generic [ref=e40]:
+            - button "Mark Done" [ref=e41] [cursor=pointer]
+            - button "Delete" [ref=e42] [cursor=pointer]
+            - button "Restore" [disabled] [ref=e43]
+            - button "Edit" [ref=e44] [cursor=pointer]
+        - listitem [ref=e45]:
+          - generic [ref=e46]: e2e-edit-old-1765768039769
+          - generic [ref=e47]:
+            - button "Mark Done" [ref=e48] [cursor=pointer]
+            - button "Delete" [ref=e49] [cursor=pointer]
+            - button "Restore" [disabled] [ref=e50]
+            - button "Edit" [ref=e51] [cursor=pointer]
+        - listitem [ref=e52]:
+          - generic [ref=e53]:
+            - textbox [ref=e54]: e2e-edit-old-1765768083876
+            - generic [ref=e55]:
+              - button "Save" [ref=e56] [cursor=pointer]
+              - button "Cancel" [ref=e57] [cursor=pointer]
+          - generic [ref=e58]:
+            - button "Mark Done" [ref=e59] [cursor=pointer]
+            - button "Delete" [ref=e60] [cursor=pointer]
+            - button "Restore" [disabled] [ref=e61]
+      - generic [ref=e62]:
+        - button "Prev" [ref=e63]
+        - button "Next" [disabled] [ref=e64]
+```

@@ -1,19 +1,8 @@
-
-> todo-frontend@0.0.0 start
-> ng serve --host 127.0.0.1 --port 4200 --proxy-config proxy.conf.json --verbose --hmr=false
-
-❯ Building...
-✔ Building...
-Initial chunk files | Names         | Raw size
-main.js             | main          | 58.67 kB | 
-styles.css          | styles        | 95 bytes | 
-
-                    | Initial total | 58.76 kB
-
-Application bundle generation complete. [1.230 seconds] - 2025-12-14T06:33:46.203Z
-
-Watch mode enabled. Watching for file changes...
-NOTE: Raw file sizes do not reflect development server per-request transformations.
-1:33:46 AM [vite] (client) Re-optimizing dependencies because vite config has changed
-  ➜  Local:   http://127.0.0.1:4200/
-  ➜  press h + enter to show help
+npm error code ENOENT
+npm error syscall open
+npm error path /Users/maxschlappkohl/workspace/todo/package.json
+npm error errno -2
+npm error enoent Could not read package.json: Error: ENOENT: no such file or directory, open '/Users/maxschlappkohl/workspace/todo/package.json'
+npm error enoent This is related to npm not being able to find a file.
+npm error enoent
+npm error A complete log of this run can be found in: /Users/maxschlappkohl/.npm/_logs/2025-12-15T02_48_11_478Z-debug-0.log
