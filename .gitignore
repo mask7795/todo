@@ -32,3 +32,10 @@ frontend/test-results/
 .DS_Store
 DS_Store
 .env
+
+# Runtime files created during local runs
+backend.log
+backend.pid
+frontend.log
+frontend.pid
+uv.lock
