@@ -45,8 +45,8 @@ else
   fi
 fi
 
-# Install dependencies reproducibly
-echo "[setup-frontend] Installing frontend dependencies via npm ci"
-npm ci
+# Install dependencies
+echo "[setup-frontend] Installing frontend dependencies via npm install"
+npm install
 
 echo "[setup-frontend] Done. You can now run: npm run start:frontend"

@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.setTimeout(120000);
-
-test('edit todo updates title and persists', async ({ page, request }) => {
+test('edit todo updates title and persists', { timeout: 120000 }, async ({ page, request }) => {
   const apiKey = process.env.TODO_API_KEY ?? 'secret';
   const oldTitle = `e2e-edit-old-${Date.now()}`;
   const newTitle = `e2e-edit-new-${Date.now()}`;
